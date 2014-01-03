@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="90">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>OSF_Directory.cpp</itemPath>
+      <itemPath>OSF_Directory.h</itemPath>
+      <itemPath>OSF_DiskList.h</itemPath>
+      <itemPath>OSF_Exception.cpp</itemPath>
+      <itemPath>OSF_Exception.h</itemPath>
+      <itemPath>OSF_File.cpp</itemPath>
+      <itemPath>OSF_File.h</itemPath>
+      <itemPath>OSF_FileSystem.cpp</itemPath>
+      <itemPath>OSF_FileSystem.h</itemPath>
+      <itemPath>OSF_VHDD.cpp</itemPath>
+      <itemPath>OSF_VHDD.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f3"
+                     displayName="OSF_DiskListTest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/OSF_DiskListTest_Basic.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2"
+                     displayName="OSF_FileSystemTest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/OSF_FileSystemTest_Basic.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f1" displayName="OSF_VHDD" projectFiles="true" kind="TEST">
+        <itemPath>tests/OSF_VHDD_Basic.cpp</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>OSF-Makefile.mk</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>OSF-Makefile.mk</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+      </compileType>
+      <item path="OSF_Directory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_Directory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_DiskList.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Exception.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_Exception.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_File.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_File.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_FileSystem.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_FileSystem.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_VHDD.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_VHDD.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+        </linkerTool>
+      </folder>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_DiskListTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_FileSystemTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_VHDD_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="OSF_Directory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_Directory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_DiskList.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Exception.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_Exception.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_File.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_File.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_FileSystem.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_FileSystem.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_VHDD.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="OSF_VHDD.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+        </linkerTool>
+      </folder>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_DiskListTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_FileSystemTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_VHDD_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
