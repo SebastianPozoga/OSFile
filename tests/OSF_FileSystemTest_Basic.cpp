@@ -5,39 +5,40 @@
  * Created on Dec 27, 2013, 8:48:19 PM
  */
 
-#include <stdlib.h>
-#include <iostream>
+#include "OSF_Types.h"
+#include "OSF_TestUnit.h"
 #include "OSF_VHDD.h"
 #include "OSF_FileSystem.h"
+#include "OSF_File.h"
 
-//linux create dir
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-/*
- * Simple C++ Test Suite
- */
+#include <stdlib.h>
+#include <iostream>
 
 #define SECTOR_SIZE 128
 #define SECTOR_COUNT 20
 #define SECTORS_PER_CLUSTER 2
 #define CLUSTER_SIZE SECTOR_SIZE*SECTORS_PER_CLUSTER
 
-void testGetVHDD() {
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_GetVHDD.osf", (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)SECTOR_COUNT, true);
+void testGetVHDD(OSF_TestUnit* testUnit) {
+    testUnit->setErrorMsg("no return VHDD");
+    //init
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_GetVHDD.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt)SECTORS_PER_CLUSTER);
+    //test
     if (fileSystem->getVHDD() != vhdd) {
-        std::cout << "%TEST_FAILED% time=0 testname=testGetVHDD (OSF_FileSystemTest_Basic) message=error message sample" << std::endl;
+        testUnit->error();
     }
+    //destroy
     delete fileSystem;
     delete vhdd;
 }
 
-void testOSF_FileSystem() {
+void testOSF_FileSystem(OSF_TestUnit* testUnit) {
+    testUnit->setErrorMsg("recognized by readed disk name is incorrect");
+    //prepare
     char diskName[] = "TDisk\0";
     //Create new Silesystem
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_FileSystem.osf", SECTOR_SIZE, SECTOR_COUNT, true);
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_FileSystem.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
     OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
     strncpy(header->diskName, diskName, sizeof(header->diskName));
     header->diskName[ sizeof(header->diskName)-1 ] ='\n';
@@ -47,24 +48,26 @@ void testOSF_FileSystem() {
     fileSystem->readHeader(header);
     //test
     if (strcmp(diskName, header->diskName)!=0) {
-        std::cout << "%TEST_FAILED% time=0 testname=testGetVHDD (OSF_FileSystemTest_Basic) message=error message sample" << std::endl;
+        testUnit->error();
     }
+    //destroy
     delete fileSystem;
     delete header;
     delete vhdd;
 }
 
-void testOSF_FileSystem2() {
-    //    OSF_VHDD* vHDD;
-    //    int sectorsForDiskCluster;
-    //    OSF_FileSystem oSF_FileSystem(vHDD, sectorsForDiskCluster);
-    //    if (true /*check result*/) {
-    //        std::cout << "%TEST_FAILED% time=0 testname=testOSF_FileSystem2 (OSF_FileSystemTest_Basic) message=error message sample" << std::endl;
-    //    }
+void testOSF_FileSystem2(OSF_TestUnit* testUnit) {
+    testUnit->setErrorMsg("construct for exist structure");
+    OSF_VHDD vHDD(testUnit->filePath("OSF_FileSystem_FileSystem.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
+    OSF_FileSystem* fileSystem = new OSF_FileSystem(&vHDD, SECTOR_COUNT);
+    if (!fileSystem) {
+        testUnit->error();
+    }
+    delete fileSystem;
 }
 
-void testAllocCluster() {
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_testAllocCluster.osf", (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)6, true);
+void testAllocCluster(OSF_TestUnit* testUnit) {
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testAllocCluster.osf"), (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)6, true);
     OSF_FileSystemHeader* header = new OSF_FileSystemHeader();
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, 2);
     //TEST1: one cluster is free. The first free cluster is 3
@@ -72,20 +75,20 @@ void testAllocCluster() {
     // cluster 1 contain root directory
     OSF_ClusterInt cluster = fileSystem->allocCluster();
     if (cluster != 2) {
-        std::cout << "%TEST_FAILED% time=0 testname=testAllocCluster (OSF_FileSystemTest_Basic) message=no allocate first cluster" << std::endl;
+        testUnit->error("no allocate first cluster");
     }
     //TEST2: all cluster is allocated. Return NULL
     cluster = fileSystem->allocCluster();
     if (cluster != NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testAllocCluster (OSF_FileSystemTest_Basic) message=no return null when all cluster is allocated" << std::endl;
+        testUnit->error("no return null when all cluster is allocated");
     }
     delete fileSystem;
     delete header;
     delete vhdd;
 }
 
-void testFreeCluster() {
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_testFreeCluster.osf", SECTOR_SIZE, 6, true);
+void testFreeCluster(OSF_TestUnit* testUnit) {
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testFreeCluster.osf"), SECTOR_SIZE, 6, true);
     OSF_FileSystemHeader* header = new OSF_FileSystemHeader();
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, 2);
     //TEST1: one cluster is free. The first free cluster is 3
@@ -93,36 +96,36 @@ void testFreeCluster() {
     // cluster 1 contain root directory
     OSF_ClusterInt cluster = fileSystem->allocCluster();
     if (cluster != 2) {
-        std::cout << "%TEST_FAILED% time=0 testname=testFreeCluster (OSF_FileSystemTest_Basic) message=no allocate first cluster" << std::endl;
+        testUnit->error("no allocate first cluster");
     }
     //TEST2: all cluster is allocated. Return NULL
     cluster = fileSystem->allocCluster();
     if (cluster != NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testFreeCluster (OSF_FileSystemTest_Basic) message=no return null when all cluster is allocated" << std::endl;
+        testUnit->error("no return null when all cluster is allocated");
     }
     //TEST FREE and Allocated third cluster (index=2)
     fileSystem->freeCluster(2);
     cluster = fileSystem->allocCluster();
     if (cluster != 2) {
-        std::cout << "%TEST_FAILED% time=0 testname=testFreeCluster (OSF_FileSystemTest_Basic) message=no allocated free cluster" << std::endl;
+        testUnit->error("no allocated free cluster");
     }
     delete fileSystem;
     delete header;
     delete vhdd;
 }
 
-void testGetClusterSize() {
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_testGetClusterSize.osf", (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)SECTOR_COUNT, true);
+void testGetClusterSize(OSF_TestUnit* testUnit) {
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testGetClusterSize.osf"), (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)SECTOR_COUNT, true);
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt)SECTORS_PER_CLUSTER);
     if (fileSystem->getClusterSize() != SECTORS_PER_CLUSTER*SECTOR_SIZE) {
-        std::cout << "%TEST_FAILED% time=0 testname=testGetClusterSize (OSF_FileSystemTest_Basic) message=no correct value" << std::endl;
+        testUnit->error("no correct value");
     }
     delete fileSystem;
     delete vhdd;
 }
 
 
-void testUserstoryWriteRead() {
+void testUserstoryWriteRead(OSF_TestUnit* testUnit) {
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
     //char path[] = "./OSF_test_data/OSF_FileSystem_us_writeread.osf";
@@ -132,7 +135,7 @@ void testUserstoryWriteRead() {
         buffer[i] = (char) (i+1)%30;
     }
     //Crete struct
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_FileSystem_us_writeread.osf", SECTOR_SIZE, SECTOR_COUNT, true);
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_us_writeread.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
     OSF_FileSystemHeader* header =new OSF_FileSystemHeader;
     strncpy((char*) &header->diskName, "TDisk", sizeof (header->diskName));
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
@@ -151,7 +154,7 @@ void testUserstoryWriteRead() {
     }
     //test
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryWriteRead (OSF_FileSystemTest_Basic) message=valid error" << std::endl;
+        testUnit->error("data valid error");
     }
     free(buffer);
     delete fileSystem;
@@ -159,7 +162,7 @@ void testUserstoryWriteRead() {
     delete vhdd;
 }
 
-void testRead() {
+void testRead(OSF_TestUnit* testUnit) {
     //prepare data
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
@@ -191,7 +194,7 @@ void testRead() {
     }
     //report
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testRead (OSF_FileSystemTest_Basic) message=read error" << std::endl;
+        testUnit->error("valid readed data error");
     }
     free(buffer);
     delete fileSystem;
@@ -199,7 +202,7 @@ void testRead() {
     delete vhdd;
 }
 
-void testWrite() {
+void testWrite(OSF_TestUnit* testUnit) {
     //prepare data
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
@@ -225,7 +228,8 @@ void testWrite() {
     //read
     FILE* f = fopen(path, "r");
     if (!f) {
-        std::cout << "%TEST_FAILED% time=0 testname=testWrite (OSF_FileSystemTest_Basic) message=no open file" << std::endl;
+        testUnit->error("no open file");
+        return;
     }
     fseek(f, CLUSTER_SIZE * clusterNumber, SEEK_SET);
     fread(buffer, 1, blockSize, f);
@@ -240,7 +244,7 @@ void testWrite() {
     }
     //report
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testWrite (OSF_FileSystemTest_Basic) message=error message sample" << std::endl;
+        testUnit->error("valid data error");
     }
     free(buffer);
 }
@@ -249,7 +253,7 @@ void testWrite() {
 /**
  * Test if the data write are lost after second write
  */
-void testDoubleWrite() {
+void testDoubleWrite(OSF_TestUnit* testUnit) {
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
     char path[] = "./OSF_test_data/OSF_FileSystem_doubleWrite.osf";
@@ -277,7 +281,8 @@ void testDoubleWrite() {
     //read
     FILE* f = fopen(path, "rb");
     if (!f) {
-        std::cout << "%TEST_FAILED% time=0 testname=testDoubleWrite (OSF_FileSystemTest_Basic) message=no open file" << std::endl;
+        testUnit->error("no open file");
+        return;
     }
     fseek(f, CLUSTER_SIZE * clusterNumber, SEEK_SET);
     memset(buffer, 0, blockSize);
@@ -292,12 +297,13 @@ void testDoubleWrite() {
         }
     }
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testDoubleWrite (OSF_FileSystemTest_Basic) message=no valid read cluster "<<clusterNumber << std::endl;
+        testUnit->error("no valid readed data");
     }
     //read2
     f = fopen(path, "rb");
     if (!f) {
-        std::cout << "%TEST_FAILED% time=0 testname=testDoubleWrite (OSF_FileSystemTest_Basic) message=no open file" << std::endl;
+        testUnit->error("no open file");
+        return;
     }
     fseek(f, CLUSTER_SIZE *(clusterNumber+1), SEEK_SET);
     memset(buffer, 0, blockSize);
@@ -312,63 +318,30 @@ void testDoubleWrite() {
         }
     }
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testDoubleWrite (OSF_FileSystemTest_Basic) message=no valid read cluster 0" << std::endl;
+        testUnit->error("no valid read cluster");
     }
     //end
     free(buffer);
 }
 
 int main(int argc, char** argv) {
-    struct stat st = {0};
-    if (stat("./OSF_test_data", &st) == -1) {
-        mkdir("./OSF_test_data", 0777);
-    }
     
-    std::cout << "%SUITE_STARTING% OSF_FileSystemTest_Basic" << std::endl;
-    std::cout << "%SUITE_STARTED%" << std::endl;
-
-    std::cout << "%TEST_STARTED% testUserstoryWriteRead (OSF_FileSystemTest_Basic)" << std::endl;
-    testUserstoryWriteRead();
-    std::cout << "%TEST_FINISHED% time=0 testUserstoryWriteRead (OSF_FileSystemTest_Basic)" << std::endl;
+    OSF_TestUnit testUnit;
     
-    std::cout << "%TEST_STARTED% testRead (OSF_FileSystemTest_Basic)" << std::endl;
-    testRead();
-    std::cout << "%TEST_FINISHED% time=0 testRead (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testWrite (OSF_FileSystemTest_Basic)" << std::endl;
-    testWrite();
-    std::cout << "%TEST_FINISHED% time=0 testWrite (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testDoubleWrite (OSF_FileSystemTest_Basic)" << std::endl;
-    testDoubleWrite();
-    std::cout << "%TEST_FINISHED% time=0 testDoubleWrite (OSF_FileSystemTest_Basic)" << std::endl;
+    testUnit.startTests("OSF_FileSystemTest_Basic");
     
-    std::cout << "%TEST_STARTED% testGetVHDD (OSF_FileSystemTest_Basic)" << std::endl;
-    testGetVHDD();
-    std::cout << "%TEST_FINISHED% time=0 testGetVHDD (OSF_FileSystemTest_Basic)" << std::endl;
+    testUnit.test("testUserstoryWriteRead", &testUserstoryWriteRead);
+    testUnit.test("testRead", &testRead);
+    testUnit.test("testWrite", &testWrite);
+    testUnit.test("testDoubleWrite", &testDoubleWrite);
+    testUnit.test("testGetVHDD", &testGetVHDD);
+    testUnit.test("testOSF_FileSystem", &testOSF_FileSystem);
+    testUnit.test("testOSF_FileSystem2", &testOSF_FileSystem2);
+    testUnit.test("testAllocCluster", &testAllocCluster);
+    testUnit.test("testFreeCluster", &testFreeCluster);
+    testUnit.test("testGetClusterSize", &testGetClusterSize);
 
-    std::cout << "%TEST_STARTED% testOSF_FileSystem (OSF_FileSystemTest_Basic)" << std::endl;
-    testOSF_FileSystem();
-    std::cout << "%TEST_FINISHED% time=0 testOSF_FileSystem (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testOSF_FileSystem2 (OSF_FileSystemTest_Basic)" << std::endl;
-    testOSF_FileSystem2();
-    std::cout << "%TEST_FINISHED% time=0 testOSF_FileSystem2 (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testAllocCluster (OSF_FileSystemTest_Basic)" << std::endl;
-    testAllocCluster();
-    std::cout << "%TEST_FINISHED% time=0 testAllocCluster (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testFreeCluster (OSF_FileSystemTest_Basic)" << std::endl;
-    testFreeCluster();
-    std::cout << "%TEST_FINISHED% time=0 testFreeCluster (OSF_FileSystemTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testGetClusterSize (OSF_FileSystemTest_Basic)" << std::endl;
-    testGetClusterSize();
-    std::cout << "%TEST_FINISHED% time=0 testGetClusterSize (OSF_FileSystemTest_Basic)" << std::endl;
-
-
-    std::cout << "%SUITE_FINISHED% time=0" << std::endl;
+    testUnit.endTests();
 
     return (EXIT_SUCCESS);
 }

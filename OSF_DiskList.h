@@ -8,11 +8,14 @@
 #ifndef DISKLIST_H
 #define	DISKLIST_H
 
+#include "OSF_Types.h"
+#include "OSF_FileSystemInterface.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "OSF_FileSystem.h"
+using namespace std;
 
 struct OSF_DiskListHeader {
     OSF_ClusterInt clusterNumber;
@@ -36,7 +39,7 @@ template<class Header, class Record>
 class OSF_DiskList {
 private:
     //File system data
-    OSF_FileSystem* fileSystem;
+    OSF_FileSystemInterface* fileSystem;
     OSF_ClusterInt firstCluster;
     //Current meta data
     OSF_ClusterInt currentCluster;
@@ -52,7 +55,7 @@ private:
 public:
 
     /*Load list*/
-    OSF_DiskList(OSF_FileSystem* fileSystem, OSF_ClusterInt firstCluster) : fileSystem(fileSystem), firstCluster(firstCluster) {
+    OSF_DiskList(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster) : fileSystem(fileSystem), firstCluster(firstCluster) {
         //init buffor
         OSF_ClusterInt clusterSize = fileSystem->getClusterSize();
         this->buffer = (char*) malloc(clusterSize);
@@ -67,7 +70,7 @@ public:
     }
 
     /*Create new list*/
-    OSF_DiskList(OSF_FileSystem* fileSystem, Header* header, OSF_ClusterInt firstCluster) : fileSystem(fileSystem) {
+    OSF_DiskList(OSF_FileSystemInterface* fileSystem, Header* header, OSF_ClusterInt firstCluster) : fileSystem(fileSystem) {
         //init buffor
         this->buffer = (char*) malloc(this->fileSystem->getClusterSize());
         this->clusterHeader = (OSF_DiskListHeader*) buffer;
@@ -206,7 +209,7 @@ public:
         free(this->buffer);
     }
 
-    OSF_FileSystem* getFileSystem() const {
+    OSF_FileSystemInterface* getFileSystem() const {
         return this->fileSystem;
     }
 

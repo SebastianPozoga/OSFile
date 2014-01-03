@@ -3,11 +3,11 @@
 #include "OSF_Exception.h"
 
 /*Create object represented exist file*/
-OSF_File::OSF_File(OSF_FileSystem* fileSystem, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, firstCluster) {
+OSF_File::OSF_File(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, firstCluster) {
 }
 
 /*Create new file*/
-OSF_File::OSF_File(OSF_FileSystem* fileSystem, OSF_FileHeder* header, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, header, firstCluster) {
+OSF_File::OSF_File(OSF_FileSystemInterface* fileSystem, OSF_FileHeder* header, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, header, firstCluster) {
 }
 
 void OSF_File::initNew() {
@@ -21,7 +21,7 @@ void OSF_File::initNew() {
 }*/
 
 
-OSF_ClusterInt OSF_File::read(OSF_Pointer ptr, OSF_ClusterInt firstToRead, OSF_ClusterInt count) {
+OSF_ClusterInt OSF_File::read(OSF_Buffer ptr, OSF_ClusterInt firstToRead, OSF_ClusterInt count) {
     ////skip all before
     OSF_FileRecord record;
     first(&record);
@@ -40,7 +40,7 @@ OSF_ClusterInt OSF_File::read(OSF_Pointer ptr, OSF_ClusterInt firstToRead, OSF_C
     return readedCluster;
 }
 
-OSF_ClusterInt OSF_File::write(OSF_Pointer ptr, OSF_ClusterInt firstToWrite, OSF_ClusterInt count) {
+OSF_ClusterInt OSF_File::write(OSF_Buffer ptr, OSF_ClusterInt firstToWrite, OSF_ClusterInt count) {
     int c = 0;
     ////skip
     OSF_FileRecord record;

@@ -8,15 +8,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include "OSF_DiskList.h"
-
-//linux create dir
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-/*
- * Simple C++ Test Suite
- */
+#include "OSF_FileSystem.h"
+#include "OSF_VHDD.h"
+#include "OSF_TestUnit.h"
 
 #define SECTOR_SIZE 128
 #define SECTOR_COUNT 20
@@ -31,7 +25,7 @@ struct Record {
     int number;
 };
 
-void testOSF_DiskList() {
+void testOSF_DiskList(OSF_TestUnit* testUnit) {
     //We create new disk list
     // (with cluster allocated)
     int value = 0x0f0f;
@@ -45,28 +39,21 @@ void testOSF_DiskList() {
     header->number = 0;
     diskList->readHeader(header);
     if (header->number != value) {
-        std::cout << "%TEST_FAILED% time=0 testname=testOSF_DiskList (OSF_DiskListTest_Basic) message=no persist header" << std::endl;
+        testUnit->error("no persist header");
     }
     //2) must auto reserved cluster
     // (no cluster will be free)
     if (fileSystem->allocCluster() != NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testOSF_DiskList (OSF_DiskListTest_Basic) message=no allocated cluster" << std::endl;
+        testUnit->error("no allocated cluster");
     }
     //clean (deletes)
     delete diskList;
     delete fileSystem;
     delete header;
     delete vhdd;
-
-    //    OSF_FileSystem* fileSystem;
-    //    unsigned int firstCluster;
-    //    OSF_DiskList oSF_DiskList(fileSystem, firstCluster);
-    //    if (true /*check result*/) {
-    //        std::cout << "%TEST_FAILED% time=0 testname=testOSF_DiskList (OSF_DiskListTest_Basic) message=error message sample" << std::endl;
-    //    }
 }
 
-void testOSF_DiskList2() {
+void testOSF_DiskList2(OSF_TestUnit* testUnit) {
     //We create new disk list
     // (with cluster allocated)
     int value = 0x0f0f;
@@ -84,12 +71,12 @@ void testOSF_DiskList2() {
     header->number = 0;
     diskList->readHeader(header);
     if (header->number != value) {
-        std::cout << "%TEST_FAILED% time=0 testname=testOSF_DiskList2 (OSF_DiskListTest_Basic) message=no persist header" << std::endl;
+        testUnit->error("no persist header");
     }
     //2) must use exist cluster. (cluster count must no modified)
     // (no cluster will be free)
     if (fileSystem->allocCluster() != NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testOSF_DiskList2 (OSF_DiskListTest_Basic) message=allocate error" << std::endl;
+        testUnit->error("allocate error");
     }
     //clean (deletes)
     delete diskList;
@@ -98,7 +85,7 @@ void testOSF_DiskList2() {
     delete vhdd;
 }
 
-void testUserstoryOneRecord() {
+void testUserstoryOneRecord(OSF_TestUnit* testUnit) {
     //Init data
     int value = 0x0f0f;
     OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_userstoryOneRecord.osf", SECTOR_SIZE, 1, true);
@@ -114,22 +101,22 @@ void testUserstoryOneRecord() {
     Record* readedRecord = new Record();
     diskList->first(readedRecord);
     if (readedRecord->number != record->number) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryOneRecord (OSF_DiskListTest_Basic) message=no read first record" << std::endl;
+        testUnit->error("no read first record");
     }
     //2)Current record must be first
     readedRecord->number = 0;
     diskList->current(readedRecord);
     if (readedRecord->number != record->number) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryOneRecord (OSF_DiskListTest_Basic) message=current record read error" << std::endl;
+        testUnit->error("current record read error");
     }
     //2)No read more record
     readedRecord->number = 0;
     if (diskList->next(readedRecord) != NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryOneRecord (OSF_DiskListTest_Basic) message=next must return NULL" << std::endl;
+        testUnit->error("next must return NULL");
     }
     //3)No modified when end
     if (readedRecord->number != 0) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryOneRecord (OSF_DiskListTest_Basic) message=after read next with no exist element must no modified record" << std::endl;
+        testUnit->error("after read next with no exist element must no modified record");
     }
     //clean (deletes)
     delete diskList;
@@ -140,7 +127,7 @@ void testUserstoryOneRecord() {
     delete vhdd;
 }
 
-void testUserstoryIterate() {
+void testUserstoryIterate(OSF_TestUnit* testUnit) {
     //Init data
     OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_userstoryIterate.osf", SECTOR_SIZE, 15, true);
     Header* header = new Header;
@@ -160,17 +147,17 @@ void testUserstoryIterate() {
     Record* record2 = new Record;
     int readedRecordCount = 0;
     if (diskList->first(record) == NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryIterate (OSF_DiskListTest_Basic) message=no read first record" << std::endl;
+        testUnit->error("no read first record");
         return;
     }
     do {
         if (diskList->current(record2) == NULL) {
-            std::cout << "%TEST_FAILED% time=0 testname=testUserstoryIterate (OSF_DiskListTest_Basic) message=no read current record" << std::endl;
+        testUnit->error("no read current record");
             return;
         }
         //current record must be equal
         if (record->number != record2->number) {
-            std::cout << "%TEST_FAILED% time=0 testname=testUserstoryIterate (OSF_DiskListTest_Basic) message=current record and iterated record must be the same" << std::endl;
+        testUnit->error("current record and iterated record must be the same");
             return;
         }
         //count records
@@ -178,7 +165,7 @@ void testUserstoryIterate() {
     } while (diskList->next(record) != NULL);
     //2)The record count must be equal to added record number
     if (readedRecordCount != addedRecordCount) {
-        std::cout << "%TEST_FAILED% time=0 testname=testUserstoryIterate (OSF_DiskListTest_Basic) message=readed record count is different than added record count" << std::endl;
+        testUnit->error("readed record count is different than added record count");
         return;
     }
     //clean (deletes)
@@ -191,31 +178,16 @@ void testUserstoryIterate() {
 }
 
 int main(int argc, char** argv) {
-    struct stat st = {0};
-    if (stat("./OSF_test_data", &st) == -1) {
-        mkdir("./OSF_test_data", 0777);
-    }
+    OSF_TestUnit testUnit;
+    
+    testUnit.startTests("OSF_DiskListTest_Basic");
+    
+    testUnit.test("testOSF_DiskList", &testOSF_DiskList);
+    testUnit.test("testOSF_DiskList2", &testOSF_DiskList2);
+    testUnit.test("testUserstoryOneRecord", &testUserstoryOneRecord);
+    testUnit.test("testUserstoryIterate", &testUserstoryIterate);
 
-
-    std::cout << "%SUITE_STARTING% OSF_DiskListTest_Basic" << std::endl;
-    std::cout << "%SUITE_STARTED%" << std::endl;
-
-    std::cout << "%TEST_STARTED% testOSF_DiskList (OSF_DiskListTest_Basic)" << std::endl;
-    testOSF_DiskList();
-    std::cout << "%TEST_FINISHED% time=0 testOSF_DiskList (OSF_DiskListTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testOSF_DiskList2 (OSF_DiskListTest_Basic)" << std::endl;
-    testOSF_DiskList2();
-    std::cout << "%TEST_FINISHED% time=0 testOSF_DiskList2 (OSF_DiskListTest_Basic)" << std::endl;
-
-
-    std::cout << "%TEST_STARTED% testUserstoryOneRecord (OSF_DiskListTest_Basic)" << std::endl;
-    testUserstoryOneRecord();
-    std::cout << "%TEST_FINISHED% time=0 testUserstoryOneRecord (OSF_DiskListTest_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testUserstoryIterate (OSF_DiskListTest_Basic)" << std::endl;
-    testUserstoryIterate();
-    std::cout << "%TEST_FINISHED% time=0 testUserstoryIterate (OSF_DiskListTest_Basic)" << std::endl;
+    testUnit.endTests();
 
     std::cout << "%SUITE_FINISHED% time=0" << std::endl;
 

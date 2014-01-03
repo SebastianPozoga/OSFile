@@ -8,22 +8,13 @@
 #ifndef VHDD_H
 #define	VHDD_H
 
+#include "OSF_Types.h"
+#include "OSF_VHDDInterface.h"
+
 #include <stdio.h>
 #include <string>
 
-#include <iostream>     // std::cout
-#include <fstream>      // std::ifstream
-
 using namespace std;
-
-/*Terms*/
-// sector - A sector is a division, usually 512 or 2048 bytes large, of a storage device like a hard drive or flash drive.
-
-//Represented sector number or count
-#define OSF_SectorInt unsigned int
-
-//Represented sector size
-#define OSF_SectorSizeInt unsigned int
 
 /**
  * Class represented a virtual device. The VHDD (Virtual Hard Disk Driver) storage all informations;
@@ -33,11 +24,10 @@ using namespace std;
  * @param sectorSize A byte per sector
  * @param sectorCount A sector count
  */
-class OSF_VHDD {
+class OSF_VHDD : public OSF_VHDDInterface {
 private:
     //handle to disk file
     FILE* file;
-    //fstream fs;
 
     //path to virtual disk file
     std::string path;

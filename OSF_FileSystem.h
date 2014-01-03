@@ -8,42 +8,35 @@
 #ifndef SPFILESYSTEM_H
 #define	SPFILESYSTEM_H
 
-#include "OSF_VHDD.h"
+#include "OSF_Types.h"
+#include "OSF_VHDDInterface.h"
+#include "OSF_FileSystemInterface.h"
+#include "OSF_DiskList.h"
+
+//#include "OSF_VHDD.h"
 //#include "OSF_DiskList.h"
+
+//
+
+class OSF_Directory;
+//struct OSF_FileSystemHeader;
+//struct OSF_FileSystemRecord;
+
 
 using namespace std;
 
-#define OSF_ClusterInt unsigned int
-#define OSF_ClusterOffset unsigned int
-
-template<class Header, class Record>
-class OSF_DiskList;
-
-class OSF_Directory;
-
-struct OSF_FileSystemHeader {
-    char systemName[20];
-    char diskName[30];
-    OSF_ClusterInt clusterCount;
-    OSF_ClusterInt allocPointer;
-};
-
-struct OSF_FileSystemRecord {
-    OSF_ClusterInt freeRecord;
-};
-
-class OSF_FileSystem {
+class OSF_FileSystem : public OSF_FileSystemInterface {
 private:
-    OSF_VHDD* vHDD;
+    OSF_VHDDInterface* vHDD;
     int sectorsForDiskCluster;
     OSF_FileSystemHeader* header;
     OSF_DiskList<OSF_FileSystemHeader, OSF_FileSystemRecord>* allocList;
     OSF_Directory* rootDir;
 
 public:
-    OSF_FileSystem(OSF_VHDD* vHDD, OSF_FileSystemHeader* header, OSF_SectorInt sectorsForDiskCluster);
+    OSF_FileSystem(OSF_VHDDInterface* vHDD, OSF_FileSystemHeader* header, OSF_SectorInt sectorsForDiskCluster);
 
-    OSF_FileSystem(OSF_VHDD* vHDD, OSF_SectorInt sectorsForDiskCluster);
+    OSF_FileSystem(OSF_VHDDInterface* vHDD, OSF_SectorInt sectorsForDiskCluster);
 
     OSF_ClusterInt getClusterSize();
 
@@ -57,7 +50,7 @@ public:
 
     virtual ~OSF_FileSystem();
 
-    OSF_VHDD* getVHDD();
+    OSF_VHDDInterface* getVHDD();
 
     bool readHeader(OSF_FileSystemHeader* header);
 
@@ -66,7 +59,6 @@ public:
 
 };
 
-#include "OSF_DiskList.h"
 #include "OSF_Directory.h"
 
 #endif	/* SPFILESYSTEM_H */

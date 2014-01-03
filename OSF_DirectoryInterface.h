@@ -1,20 +1,18 @@
 /* 
- * File:   OSF_Directory.h
+ * File:   OSF_DirectoryInterface.h
  * Author: spozoga
  *
- * Created on January 3, 2014, 9:42 AM
+ * Created on January 3, 2014, 5:35 PM
  */
 
-#ifndef OSF_DIRECTORY_H
-#define	OSF_DIRECTORY_H
+#ifndef OSF_DIRECTORYINTERFACE_H
+#define	OSF_DIRECTORYINTERFACE_H
 
 #include "OSF_Types.h"
-#include "OSF_DiskList.h"
 #include "OSF_FileSystemInterface.h"
 #include "OSF_FileInterface.h"
 
 using namespace std;
-
 
 
 //structs
@@ -22,31 +20,29 @@ struct OSF_DirHeder;
 struct OSF_DirRecord;
 
 
-//MAIN DEF
-class OSF_Directory : OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
-    
-private:
-    
+//MAIN
+class OSF_DirectoryInterface {
 public:
-    //Use exist
-    OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster);
-    
-    /*Create new list*/
-    OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_DirHeder* header, OSF_ClusterInt firstCluster);
-    
+
     /**
-     * Static helper: checks whether the entry is a directory
+     * ABSTRACT Static helper: checks whether the entry is a directory
+     * 
      * @param r (entry) record to test
      * @return return true if record type is a directory
      */
-    static bool isDir(OSF_DirRecord* r);
+    static bool isDir(OSF_DirRecord* r) {
+        return (r->flags & OSF_RESOURCE_TYPE_MASK) == OSF_RESOURCE_TYPE_DIR;
+    }
 
     /**
-     * Static helper: checks whether the entry is a file
+     * ABSTRACT Static helper: checks whether the entry is a file
+     * 
      * @param r record (entry) to test
      * @return return true if record type is a file
      */
-    static bool isFile(OSF_DirRecord* r);
+    static bool isFile(OSF_DirRecord* r) {
+        return (r->flags & OSF_RESOURCE_TYPE_MASK) == OSF_RESOURCE_TYPE_FILE;
+    }
 
     /**
      * Find resource record (entry) by path
@@ -103,5 +99,5 @@ struct OSF_DirRecord {
     OSF_GID gid;
 };
 
-#endif	/* OSF_DIRECTORY_H */
+#endif	/* OSF_DIRECTORYINTERFACE_H */
 

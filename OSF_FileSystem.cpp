@@ -2,10 +2,11 @@
 #include "OSF_FileSystem.h"
 #include "OSF_DiskList.h"
 #include "OSF_Directory.h"
+
 #include <stdio.h>
 #include <string.h>
 
-OSF_FileSystem::OSF_FileSystem(OSF_VHDD* vHDD, OSF_FileSystemHeader* baseHeader, OSF_SectorInt sectorsForDiskCluster) : vHDD(vHDD), sectorsForDiskCluster(sectorsForDiskCluster) {
+OSF_FileSystem::OSF_FileSystem(OSF_VHDDInterface* vHDD, OSF_FileSystemHeader* baseHeader, OSF_SectorInt sectorsForDiskCluster) : vHDD(vHDD), sectorsForDiskCluster(sectorsForDiskCluster) {
     //Create new hard disk
     //prepare alloc list
     this->header = new OSF_FileSystemHeader;
@@ -20,7 +21,7 @@ OSF_FileSystem::OSF_FileSystem(OSF_VHDD* vHDD, OSF_FileSystemHeader* baseHeader,
     this->rootDir = new OSF_Directory((OSF_FileSystem*)this, &dirHeader, 1);
 }
 
-OSF_FileSystem::OSF_FileSystem(OSF_VHDD* vHDD, OSF_SectorInt sectorsForDiskCluster) : vHDD(vHDD), sectorsForDiskCluster(sectorsForDiskCluster) {
+OSF_FileSystem::OSF_FileSystem(OSF_VHDDInterface* vHDD, OSF_SectorInt sectorsForDiskCluster) : vHDD(vHDD), sectorsForDiskCluster(sectorsForDiskCluster) {
     this->allocList = new OSF_DiskList<OSF_FileSystemHeader, OSF_FileSystemRecord>((OSF_FileSystem*)this, 0);
     this->rootDir = new OSF_Directory((OSF_FileSystem*)this, 1);
     this->header = new OSF_FileSystemHeader;
@@ -66,7 +67,7 @@ OSF_FileSystem::~OSF_FileSystem() {
     delete allocList;
 }
 
-OSF_VHDD* OSF_FileSystem::getVHDD() {
+OSF_VHDDInterface* OSF_FileSystem::getVHDD() {
     return vHDD;
 }
 

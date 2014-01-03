@@ -5,20 +5,21 @@
  * Created on January 3, 2014, 9:42 AM
  */
 
+#include "OSF_FileSystemInterface.h"
 #include "OSF_Directory.h"
+#include "OSF_File.h"
 
-#include "OSF_FileSystem.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
-#include <iostream>     // std::cout
-#include <sstream>      // std::istringstream
-#include <string>       // std::string
 
 /*Create object represented exist dir*/
-OSF_Directory::OSF_Directory(OSF_FileSystem* fileSystem, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, firstCluster) {
+OSF_Directory::OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, firstCluster) {
 }
 
 /*Create new dir*/
-OSF_Directory::OSF_Directory(OSF_FileSystem* fileSystem, OSF_DirHeder* header, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, header, firstCluster) {
+OSF_Directory::OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_DirHeder* header, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, header, firstCluster) {
 }
 
 bool OSF_Directory::isDir(OSF_DirRecord* r) {
@@ -88,7 +89,7 @@ OSF_Directory* OSF_Directory::getDir(string path) {
     return dir;
 }
 
-OSF_File* OSF_Directory::getFile(string path) {
+OSF_FileInterface* OSF_Directory::getFile(string path) {
     OSF_DirRecord* r = this->get(path);
     if (r == NULL) {
         return NULL;

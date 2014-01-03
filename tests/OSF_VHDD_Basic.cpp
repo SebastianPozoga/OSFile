@@ -5,34 +5,27 @@
  * Created on Dec 27, 2013, 2:58:30 PM
  */
 
+#include "OSF_TestUnit.h"
+#include "OSF_VHDD.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
-#include "OSF_VHDD.h"
-
-//linux create dir
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-/*
- * Simple C++ Test Suite
- */
 
 #define SECTOR_SIZE 512
 
-void testOSF_VHDD() {
+void testOSF_VHDD(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_construct.osf";
     OSF_VHDD vhdd(path, SECTOR_SIZE, 1, true);
     //Test exist
     FILE *f = fopen(path, "r");
     if (f == NULL) {
-        std::cout << "%TEST_FAILED% time=0 testname=testOSF_VHDD (OSF_VHDD_Basic) message=error message sample" << std::endl;
+        testUnit->error("no create file");
     }
 }
 
-void testRead() {
+void testRead(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_read.osf";
     int sectorCount = 2;
     int blockSize = SECTOR_SIZE*sectorCount;
@@ -59,12 +52,12 @@ void testRead() {
     }
     //report
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testRead (OSF_VHDD_Basic) message=error message sample" << std::endl;
+        testUnit->error("read error");
     }
     free(buffer);
 }
 
-void testWrite() {
+void testWrite(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_write.osf";
     //Init VHDD 
     OSF_VHDD vhdd(path, SECTOR_SIZE, 2, true);
@@ -90,34 +83,21 @@ void testWrite() {
     }
     //report
     if (!valid) {
-        std::cout << "%TEST_FAILED% time=0 testname=testRead (OSF_VHDD_Basic) message=error message sample" << std::endl;
+        testUnit->error("write error");
     }
     free(buffer);
 }
 
 int main(int argc, char** argv) {
-    struct stat st = {0};
-    if (stat("./OSF_test_data", &st) == -1) {
-        mkdir("./OSF_test_data", 0777);
-    }
-
-    std::cout << "%SUITE_STARTING% OSF_VHDD_Basic" << std::endl;
-    std::cout << "%SUITE_STARTED%" << std::endl;
-
-    std::cout << "%TEST_STARTED% testOSF_VHDD (OSF_VHDD_Basic)" << std::endl;
-    testOSF_VHDD();
-    std::cout << "%TEST_FINISHED% time=0 testOSF_VHDD (OSF_VHDD_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testRead (OSF_VHDD_Basic)" << std::endl;
-    testRead();
-    std::cout << "%TEST_FINISHED% time=0 testRead (OSF_VHDD_Basic)" << std::endl;
-
-    std::cout << "%TEST_STARTED% testWrite (OSF_VHDD_Basic)" << std::endl;
-    testWrite();
-    std::cout << "%TEST_FINISHED% time=0 testWrite (OSF_VHDD_Basic)" << std::endl;
-
-    std::cout << "%SUITE_FINISHED% time=0" << std::endl;
-
+    //Testing
+    OSF_TestUnit* testUnit = new OSF_TestUnit;
+    testUnit->startTests("OSF_VHDD_Basic");
+    
+    testUnit->test("OSF_VHDD", &testOSF_VHDD);
+    testUnit->test("Read", &testRead);
+    testUnit->test("Write", &testWrite);
+    
+    testUnit->endTests();
     return (EXIT_SUCCESS);
 }
 

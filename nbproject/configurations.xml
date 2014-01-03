@@ -6,15 +6,21 @@
                    projectFiles="true">
       <itemPath>OSF_Directory.cpp</itemPath>
       <itemPath>OSF_Directory.h</itemPath>
+      <itemPath>OSF_DirectoryInterface.h</itemPath>
       <itemPath>OSF_DiskList.h</itemPath>
       <itemPath>OSF_Exception.cpp</itemPath>
       <itemPath>OSF_Exception.h</itemPath>
       <itemPath>OSF_File.cpp</itemPath>
       <itemPath>OSF_File.h</itemPath>
+      <itemPath>OSF_FileInterface.h</itemPath>
       <itemPath>OSF_FileSystem.cpp</itemPath>
       <itemPath>OSF_FileSystem.h</itemPath>
+      <itemPath>OSF_FileSystemInterface.h</itemPath>
+      <itemPath>OSF_TestUnit.h</itemPath>
+      <itemPath>OSF_Types.h</itemPath>
       <itemPath>OSF_VHDD.cpp</itemPath>
       <itemPath>OSF_VHDD.h</itemPath>
+      <itemPath>OSF_VHDDInterface.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -61,10 +67,15 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <commandlineTool>g++</commandlineTool>
+        </ccTool>
       </compileType>
       <item path="OSF_Directory.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_Directory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_DirectoryInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_DiskList.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -76,13 +87,23 @@
       </item>
       <item path="OSF_File.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="OSF_FileInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_FileSystem.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_FileSystem.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="OSF_FileSystemInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_VHDD.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_VHDD.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_VHDDInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
@@ -135,10 +156,12 @@
         <cTool>
           <incDir>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
         </ccTool>
@@ -179,6 +202,8 @@
       </item>
       <item path="OSF_Directory.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="OSF_DirectoryInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_DiskList.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_Exception.cpp" ex="false" tool="1" flavor2="0">
@@ -189,13 +214,23 @@
       </item>
       <item path="OSF_File.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="OSF_FileInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_FileSystem.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_FileSystem.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="OSF_FileSystemInterface.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_VHDD.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_VHDD.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_VHDDInterface.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
@@ -248,10 +283,12 @@
         <cTool>
           <incDir>
             <pElem>.</pElem>
+            <pElem>.</pElem>
           </incDir>
         </cTool>
         <ccTool>
           <incDir>
+            <pElem>.</pElem>
             <pElem>.</pElem>
           </incDir>
         </ccTool>
