@@ -51,7 +51,7 @@ OSF_DirRecord* OSF_Directory::searchPath(string path, OSF_Directory* dir) {
             if (isDir(r)) {
                 if (lvl != 0) delete dir;
                 ++lvl;
-                dir = new OSF_Dir(this->getFileSystem(), r->firstCluster);
+                dir = new OSF_Directory(this->getFileSystem(), r->firstCluster);
                 findSubDir = true;
                 break;
             }
@@ -83,7 +83,7 @@ OSF_Directory* OSF_Directory::getDir(string path) {
         delete r;
         return NULL;
     }
-    OSF_Directory* dir = new OSF_Dir(this->getFileSystem(), (OSF_ClusterInt) r->firstCluster);
+    OSF_Directory* dir = new OSF_Directory(this->getFileSystem(), (OSF_ClusterInt) r->firstCluster);
     delete r;
     return dir;
 }

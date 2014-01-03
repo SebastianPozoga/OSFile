@@ -10,7 +10,6 @@
 
 
 #include "OSF_DiskList.h"
-#include "OSF_File.h"
 
 using namespace std;
 
@@ -49,8 +48,12 @@ using namespace std;
 struct OSF_DirHeder;
 struct OSF_DirRecord;
 
+//Class & struct defs
+class OSF_File;
 
-class OSF_Directory : : OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
+
+//MAIN DEF
+class OSF_Directory : OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
     
 private:
     
@@ -111,6 +114,27 @@ public:
     OSF_File* getFile(string path);
 
 };
+
+struct OSF_DirHeder {
+};
+
+struct OSF_DirRecord {
+    //Resource name 
+    char name[20];
+    //description of the resource (type and permissions)
+    int flags;
+    //first disc cluster of resource
+    OSF_ClusterInt firstCluster;
+    //ID of resource owner
+    //(for operating system)
+    OSF_OWNER owner;
+    //Resource group ID
+    //(for operating system)
+    OSF_GID gid;
+};
+
+
+#include "OSF_File.h"
 
 #endif	/* OSF_DIRECTORY_H */
 

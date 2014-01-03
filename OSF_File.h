@@ -9,7 +9,6 @@
 #define	SPFILE_H
 
 #include "OSF_FileSystem.h"
-#include "OSF_DiskList.h"
 
 #define OSF_FilePointer unsigned int
 #define OSF_Size unsigned int
@@ -18,13 +17,12 @@
 
 using namespace std;
 
-struct OSF_FileHeder {
-    OSF_Size fileSize;
-};
+template<class Header, class Record>
+class OSF_DiskList;
 
-struct OSF_FileRecord {
-    OSF_ClusterInt cluster;
-};
+struct OSF_FileHeder;
+
+struct OSF_FileRecord;
 
 class OSF_File : OSF_DiskList<OSF_FileHeder, OSF_FileRecord> {
 public:
@@ -57,6 +55,16 @@ private:
 
 };
 
+struct OSF_FileHeder {
+    OSF_Size fileSize;
+};
+
+struct OSF_FileRecord {
+    OSF_ClusterInt cluster;
+};
+
+
+#include "OSF_DiskList.h"
 
 #endif	/* SPFILE_H */
 

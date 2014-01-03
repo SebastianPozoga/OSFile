@@ -8,7 +8,6 @@
 #ifndef SPFILESYSTEM_H
 #define	SPFILESYSTEM_H
 
-#include "OSF_Directory.h"
 #include "OSF_VHDD.h"
 //#include "OSF_DiskList.h"
 
@@ -19,6 +18,8 @@ using namespace std;
 
 template<class Header, class Record>
 class OSF_DiskList;
+
+class OSF_Directory;
 
 struct OSF_FileSystemHeader {
     char systemName[20];
@@ -66,6 +67,7 @@ public:
 };
 
 #include "OSF_DiskList.h"
+#include "OSF_Directory.h"
 
 #endif	/* SPFILESYSTEM_H */
 
