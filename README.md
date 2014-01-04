@@ -4,7 +4,8 @@ PL: Lekka i przyjazna biblioteka. Pozwala stworzyć wirtualny system plików. Dz
 Jej podstawowe zastosowania to systemy wbudowane. Wystarczy napisać własną implementację OSF_VHDD i nasz system może znaleźć się w pamięci naszego mikrokontrolera. Czy jest jakiś prostszy sposób na organizację danych? 
 W podobny sposób możemy stworzyć mały system plików przechowywany w pamięci operacyjnej komputera. Myślałeś o własnej bazie danych z optymalizacją w C++?? Chciałbyś, żeby miała elastyczną strukturę? A może mini system cache... Biblioteka sprawdzi się wszędzie tam gdzie potrzebna jest (nie zawsze jawna) drzewiasta organizacja danych. 
 
-Zalety:
+Zalety
+------
 + mała i lekka
 + otwarty kod
 + swobodna edycja
@@ -13,8 +14,12 @@ Zalety:
 + prosta w obsłudze
 
 Licencja
-MIT License
+--------
+Całość rozpowszechcniana jest na licencji MIT License
+Więcej informacji na: http://opensource.org/licenses/MIT
 
 FAQ
+---
 Chcesz jej użyć? Masz pytania? 
-Pisz: sebastian@pozoga.eu
+Jeśli napisałeś jakiś projekt powiadom mnie o tym!
+sebastian@pozoga.eu
