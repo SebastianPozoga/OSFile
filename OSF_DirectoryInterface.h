@@ -26,12 +26,6 @@ struct OSF_DirRecord {
     int flags;
     //first disc cluster of resource
     OSF_ClusterInt firstCluster;
-    //ID of resource owner
-    //(for operating system)
-    OSF_OWNER owner;
-    //Resource group ID
-    //(for operating system)
-    OSF_GID gid;
 };
 
 

@@ -21,7 +21,16 @@
  * Header of File
  */
 struct OSF_FileHeder {
+    //meta size of file
     OSF_Size fileSize;
+    //description of the resource (type and permissions)
+    int permission;
+    //ID of resource owner
+    //(for operating system)
+    OSF_OWNER owner;
+    //Resource group ID
+    //(for operating system)
+    OSF_GID gid;
 };
 
 /**
@@ -67,8 +76,17 @@ public:
      * 
      * @return OSF_FileHeder file header
      */
-    virtual OSF_FileHeder getFileHeder(){
+    virtual OSF_FileHeder* readFileHeder(OSF_FileHeder*){
         throw OSF_Exception("OSF_FileInterface No implement getFileHeder", 301);
+    }
+    
+    /**
+     * Write new header of file
+     * 
+     * @return OSF_FileHeder file header
+     */
+    virtual OSF_FileHeder* writeFileHeder(OSF_FileHeder*){
+        throw OSF_Exception("OSF_FileInterface No implement setFileHeder", 301);
     }
 
 };

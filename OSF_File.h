@@ -48,6 +48,9 @@ public:
      */
     OSF_ClusterInt read(OSF_Buffer ptr, OSF_ClusterInt firstToRead, OSF_ClusterInt count);
     OSF_ClusterInt write(OSF_Buffer ptr, OSF_ClusterInt firstToWrite, OSF_ClusterInt count);
+    
+    OSF_FileHeder* readFileHeder(OSF_FileHeder*);
+    OSF_FileHeder* writeFileHeder(OSF_FileHeder*);
 
 };
 

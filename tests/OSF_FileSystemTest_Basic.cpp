@@ -162,7 +162,7 @@ void testUserstoryWriteRead(OSF_TestUnit* testUnit) {
     delete vhdd;
 }
 
-void testRead(OSF_TestUnit* testUnit) {
+void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     //prepare data
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
@@ -202,7 +202,7 @@ void testRead(OSF_TestUnit* testUnit) {
     delete vhdd;
 }
 
-void testWrite(OSF_TestUnit* testUnit) {
+void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     //prepare data
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
@@ -331,8 +331,8 @@ int main(int argc, char** argv) {
     testUnit.startTests("OSF_FileSystemTest_Basic");
     
     testUnit.test("testUserstoryWriteRead", &testUserstoryWriteRead);
-    testUnit.test("testRead", &testRead);
-    testUnit.test("testWrite", &testWrite);
+    testUnit.test("testRead", &userstoryWriteAndReadOnBegin);
+    testUnit.test("testWrite", &userstoryWriteAndReadThird);
     testUnit.test("testDoubleWrite", &testDoubleWrite);
     testUnit.test("testGetVHDD", &testGetVHDD);
     testUnit.test("testOSF_FileSystem", &testOSF_FileSystem);

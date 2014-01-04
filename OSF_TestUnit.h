@@ -191,6 +191,32 @@ public:
         }
         return fileSystem;
     }
+
+    char* createBuffer(long int size, long int repeatLong = 30) {
+        char* buffer = new char[size];
+        writeBufferTestData(buffer, size, repeatLong);
+        return buffer;
+    }
+
+    char* writeBufferTestData(char* buffer, long int size, long int repeatLong = 30) {
+        for(long int i=0; i<size; i++){
+            buffer[i] = (i%repeatLong)+1;
+        }
+        return buffer;
+    }
+
+    void cleanBuffer(char* buffer, long int size) {
+        memset(buffer, '?', size);
+    }
+
+    bool testBuffer(char* buffer, long int size, long int repeatLong = 30) {
+        for(long int i=0; i<size; i++){
+            if(buffer[i] != (i%repeatLong)+1){
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 

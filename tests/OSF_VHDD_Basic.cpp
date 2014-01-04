@@ -25,7 +25,7 @@ void testOSF_VHDD(OSF_TestUnit* testUnit) {
     }
 }
 
-void testRead(OSF_TestUnit* testUnit) {
+void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_read.osf";
     int sectorCount = 2;
     int blockSize = SECTOR_SIZE*sectorCount;
@@ -57,7 +57,7 @@ void testRead(OSF_TestUnit* testUnit) {
     free(buffer);
 }
 
-void testWrite(OSF_TestUnit* testUnit) {
+void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_write.osf";
     //Init VHDD 
     OSF_VHDD vhdd(path, SECTOR_SIZE, 2, true);
@@ -94,8 +94,8 @@ int main(int argc, char** argv) {
     testUnit->startTests("OSF_VHDD_Basic");
     
     testUnit->test("OSF_VHDD", &testOSF_VHDD);
-    testUnit->test("Read", &testRead);
-    testUnit->test("Write", &testWrite);
+    testUnit->test("Read", &userstoryWriteAndReadOnBegin);
+    testUnit->test("Write", &userstoryWriteAndReadThird);
     
     testUnit->endTests();
     return (EXIT_SUCCESS);

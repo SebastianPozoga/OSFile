@@ -25,18 +25,17 @@ OSF_ClusterInt OSF_File::read(OSF_Buffer ptr, OSF_ClusterInt firstToRead, OSF_Cl
     ////skip all before
     OSF_FileRecord record;
     first(&record);
-    for (int i = 0; i < firstToRead && next(&record); i++);
+    for (int i = 0; i < firstToRead && current(&record); i++, next(&record));
 
     //read
     OSF_ClusterInt clusterSize = getFileSystem()->getClusterSize();
     OSF_ClusterInt readedCluster = 0;
     char* bufferPtr = (char*) ptr;
-    for (int i = 0; i < count && next(&record); i++) {
+    for (int i = 0; i < count && current(&record); i++, next(&record)) {
         this->getFileSystem()->read(record.cluster, bufferPtr, 1);
         bufferPtr = &bufferPtr[clusterSize];
         readedCluster++;
     }
-
     return readedCluster;
 }
 
@@ -44,9 +43,10 @@ OSF_ClusterInt OSF_File::write(OSF_Buffer ptr, OSF_ClusterInt firstToWrite, OSF_
     int c = 0;
     ////skip
     OSF_FileRecord record;
-
-    for (first(&record); c < firstToWrite && next(&record); c++);
-    for (; c < firstToWrite && next(&record); c++) {
+    
+    first(&record);
+    for (; c < firstToWrite && current(&record); c++, next(&record));
+    for (; c < firstToWrite; c++, next(&record)) {
         record.cluster = getFileSystem()->allocCluster();
         push(&record);
     }
@@ -55,24 +55,31 @@ OSF_ClusterInt OSF_File::write(OSF_Buffer ptr, OSF_ClusterInt firstToWrite, OSF_
     OSF_ClusterInt clusterSize = getFileSystem()->getClusterSize();
     OSF_ClusterInt readedCluster = 0;
     char* bufferPtr = (char*) ptr;
-    for (int i = 0; i < count && next(&record); i++) {
-        OSF_ClusterInt writeCluster;
+    for (int i = 0; i < count; i++, next(&record)) {
         if (current(&record) == NULL) {
             OSF_FileRecord newRecord;
             newRecord.cluster = getFileSystem()->allocCluster();
-            if (push(&newRecord)) {
+            if (!push(&newRecord)) {
                 throw OSF_Exception("OSF_File::write Push file cluster error");
             }
-            next(&record);
+            current(&record);
             if (record.cluster != newRecord.cluster) {
                 throw OSF_Exception("OSF_File::write Iteration error");
             }
         }
-        writeCluster = record.cluster;
-        this->getFileSystem()->read(record.cluster, bufferPtr, 1);
+        //OSF_ClusterInt writeCluster = record.cluster;
+        this->getFileSystem()->write(record.cluster, bufferPtr, 1);
         bufferPtr = &bufferPtr[clusterSize];
         readedCluster++;
     }
 
     return readedCluster;
+}
+
+OSF_FileHeder* OSF_File::readFileHeder(OSF_FileHeder* header) {
+    return this->readHeader(header);
+}
+
+OSF_FileHeder* OSF_File::writeFileHeder(OSF_FileHeder* header) {
+    return this->writeHeader(header);
 }
