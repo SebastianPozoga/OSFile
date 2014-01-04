@@ -18,12 +18,12 @@ using namespace std;
 
 
 //structs
-struct OSF_DirHeder;
-struct OSF_DirRecord;
+//struct OSF_DirHeder;
+//struct OSF_DirRecord;
 
 
 //MAIN DEF
-class OSF_Directory : OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
+class OSF_Directory : public OSF_DirectoryInterface, OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
     
 private:
     
@@ -39,14 +39,14 @@ public:
      * @param r (entry) record to test
      * @return return true if record type is a directory
      */
-    static bool isDir(OSF_DirRecord* r);
+    //static bool isDir(OSF_DirRecord* r);
 
     /**
      * Static helper: checks whether the entry is a file
      * @param r record (entry) to test
      * @return return true if record type is a file
      */
-    static bool isFile(OSF_DirRecord* r);
+    //static bool isFile(OSF_DirRecord* r);
 
     /**
      * Find resource record (entry) by path
@@ -72,7 +72,7 @@ public:
      * @param path path to directory
      * @return OSF_Dir 
      */
-    OSF_Directory* getDir(string path);
+    OSF_DirectoryInterface* getDirectory(string path);
 
     /**
      * Get file by path
@@ -82,25 +82,26 @@ public:
      * @return OSF_FileInterface* found file or NULL if file no found
      */
     OSF_FileInterface* getFile(string path);
+    
 
-};
+    /**
+     * Create sub-directory with name
+     * 
+     * @param name directory name
+     * @return OSF_DirectoryInterface created directory 
+     */
+    OSF_DirectoryInterface* createDir(string name);
 
-struct OSF_DirHeder {
-};
+    /**
+     * Create file with name
+     * 
+     * @param name file name
+     * @return OSF_FileInterface created file 
+     */
+    OSF_FileInterface* createFile(string name);
 
-struct OSF_DirRecord {
-    //Resource name 
-    char name[20];
-    //description of the resource (type and permissions)
-    int flags;
-    //first disc cluster of resource
-    OSF_ClusterInt firstCluster;
-    //ID of resource owner
-    //(for operating system)
-    OSF_OWNER owner;
-    //Resource group ID
-    //(for operating system)
-    OSF_GID gid;
+protected:
+    void initRecord(string name, OSF_DirRecord* record);
 };
 
 #endif	/* OSF_DIRECTORY_H */

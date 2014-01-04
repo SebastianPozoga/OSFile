@@ -47,8 +47,10 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
+	${TESTDIR}/TestFiles/f4 \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f2 \
+	${TESTDIR}/TestFiles/f5 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -110,6 +112,10 @@ ${OBJECTDIR}/main.o: main.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
+${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/OSF_DirectoryTest_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/OSF_DiskListTest_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
@@ -118,9 +124,19 @@ ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/OSF_FileSystemTest_Basic.o ${OBJECTFIL
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/OSF_FileTest_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/OSF_VHDD_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
+
+
+${TESTDIR}/tests/OSF_DirectoryTest_Basic.o: tests/OSF_DirectoryTest_Basic.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I. -I. -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/OSF_DirectoryTest_Basic.o tests/OSF_DirectoryTest_Basic.cpp
 
 
 ${TESTDIR}/tests/OSF_DiskListTest_Basic.o: tests/OSF_DiskListTest_Basic.cpp 
@@ -133,6 +149,12 @@ ${TESTDIR}/tests/OSF_FileSystemTest_Basic.o: tests/OSF_FileSystemTest_Basic.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/OSF_FileSystemTest_Basic.o tests/OSF_FileSystemTest_Basic.cpp
+
+
+${TESTDIR}/tests/OSF_FileTest_Basic.o: tests/OSF_FileTest_Basic.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/OSF_FileTest_Basic.o tests/OSF_FileTest_Basic.cpp
 
 
 ${TESTDIR}/tests/OSF_VHDD_Basic.o: tests/OSF_VHDD_Basic.cpp 
@@ -223,8 +245,10 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${TESTDIR}/TestFiles/f4 || true; \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
+	    ${TESTDIR}/TestFiles/f5 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \

@@ -11,6 +11,7 @@
 #include "OSF_Types.h"
 #include "OSF_VHDDInterface.h"
 #include "OSF_Exception.h"
+#include "OSF_DirectoryInterface.h"
 
 struct OSF_FileSystemRecord;
 struct OSF_FileSystemHeader;
@@ -47,6 +48,10 @@ public:
 
     virtual bool writeHeader(OSF_FileSystemHeader* header){
         throw OSF_Exception("OSF_FileSystemInterface No implement writeHeader", 301);
+    }
+    
+    virtual OSF_DirectoryInterface* getRootDir(){
+        throw OSF_Exception("OSF_FileSystemInterface No implement getRootDir", 301);
     }
 
     virtual ~OSF_FileSystemInterface(){

@@ -53,8 +53,8 @@
 #define OSF_GID   unsigned int
 
 //File type flags
-#define OSF_RESOURCE_TYPE_MASK 0x200
-#define OSF_RESOURCE_TYPE_FILE 0x200
+#define OSF_RESOURCE_TYPE_MASK 0x400
+#define OSF_RESOURCE_TYPE_FILE 0x400
 #define OSF_RESOURCE_TYPE_DIR  0
 
 //File permission mask
@@ -74,6 +74,11 @@
 #define OSF_OR  1<<6
 #define OSF_OW  1<<7
 #define OSF_OX  1<<8
+
+//Default permission
+#define OSF_ALL_PERMISSION OSF_UR|OSF_UW|OSF_UX | OSF_GR|OSF_GW|OSF_GX | OSF_OR|OSF_OW|OSF_OX
+#define OSF_DEFAULT_PERMISSION OSF_ALL_PERMISSION
+
 
 #endif	/* OSF_TYPES_H */
 

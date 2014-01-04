@@ -9,6 +9,8 @@
 #define	OSF_TESTUNIT_H
 
 #include "OSF_Types.h"
+#include "OSF_VHDD.h"
+#include "OSF_FileSystem.h"
 
 #include <ctime>
 #include <iostream>
@@ -33,8 +35,19 @@ private:
     clock_t startTestTime;
     string errorMsg;
 
+    //Most use library
+    OSF_VHDD* vHDD;
+    OSF_FileSystem* fileSystem;
+    OSF_FileSystemHeader* fsHeader;
+
 public:
-    
+
+    OSF_TestUnit() {
+        vHDD = NULL;
+        fileSystem = NULL;
+        fsHeader = NULL;
+    }
+
     void startTests(string currentClass) {
         this->mkdir(OSF_TEST_PATH);
         this->currentClass = currentClass;
@@ -54,20 +67,37 @@ public:
         OSF_TTime time = this->timerEnd(startTestTime);
         std::cout << "%TEST_FAILED% time=" << time << " testname=" << currentTest << " (" << currentClass << ") message=" << msg << std::endl;
     }
-    
+
     void error() {
-        error( getErrorMsg() );
+        error(getErrorMsg());
     }
 
     void endTest() {
         OSF_TTime time = this->timerEnd(startTestTime);
         std::cout << "%TEST_FINISHED% time=" << time << " " << currentTest << " (" << currentClass << ")" << std::endl;
+        //clean
+        if (fileSystem != NULL) {
+            delete fileSystem;
+            fileSystem = NULL;
+        }
+        if (fsHeader != NULL) {
+            delete fsHeader;
+            fsHeader = NULL;
+        }
+        if (vHDD != NULL) {
+            delete vHDD;
+            vHDD = NULL;
+        }
     }
 
     void test(string name, void (*testFunction)(OSF_TestUnit*)) {
         startTest(name);
         try {
             (*testFunction)((OSF_TestUnit*)this);
+        } catch (string s) {
+            this->error("throw String: " + errorMsg + "(" + s + ")");
+        } catch (OSF_Exception e) {
+            this->error("throw OSF_Exception: " + errorMsg + "(" + e.getMessage() + ")");
         } catch (...) {
             this->error("throw: " + errorMsg);
         }
@@ -78,8 +108,7 @@ public:
         OSF_TTime time = this->timerEnd(startClassTime);
         std::cout << "%SUITE_FINISHED% time=" << time << std::endl;
     }
-    
-    
+
     string getErrorMsg() const {
         return errorMsg;
     }
@@ -123,16 +152,44 @@ public:
             ::mkdir(path.c_str(), 0777);
         }
     }
-    
+
     /**
      * Create path for test file
      * 
      * @param fileName global UNIQUE file name
      * @return path to file
      */
-    string filePath(string fileName){
+    string filePath(string fileName) {
         string base = OSF_TEST_PATH;
-        return base+fileName;
+        return base + fileName;
+    }
+
+    OSF_VHDD* getVHDD() {
+        if (vHDD == NULL) {
+            string name = currentClass + "-" + currentTest;
+            vHDD = new OSF_VHDD(filePath(name), 128, 30, true);
+        }
+        return vHDD;
+    }
+
+    OSF_FileSystemHeader* getFileSystemHader() {
+        if (fsHeader == NULL) {
+            fsHeader = new OSF_FileSystemHeader;
+            fsHeader->allocPointer = 0;
+            fsHeader->clusterCount = 0;
+            strcpy(fsHeader->diskName, "disk name");
+            strcpy(fsHeader->systemName, "system name");
+        }
+        return fsHeader;
+    }
+
+    OSF_FileSystem* getFileSystem() {
+        if (fileSystem == NULL) {
+            OSF_VHDD* vHDD = getVHDD();
+            OSF_FileSystemHeader* fsHeader = getFileSystemHader();
+            fileSystem = new OSF_FileSystem(vHDD, fsHeader, 2);
+        }
+        return fileSystem;
     }
 };
 

@@ -5,14 +5,15 @@
  * Created on January 3, 2014, 9:42 AM
  */
 
+#include "OSF_Types.h"
 #include "OSF_FileSystemInterface.h"
+#include "OSF_DirectoryInterface.h"
 #include "OSF_Directory.h"
 #include "OSF_File.h"
 
 #include <iostream>
 #include <sstream>
 #include <string>
-
 
 /*Create object represented exist dir*/
 OSF_Directory::OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, firstCluster) {
@@ -22,13 +23,13 @@ OSF_Directory::OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt
 OSF_Directory::OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_DirHeder* header, OSF_ClusterInt firstCluster) : OSF_DiskList(fileSystem, header, firstCluster) {
 }
 
-bool OSF_Directory::isDir(OSF_DirRecord* r) {
+/*bool OSF_Directory::isDir(OSF_DirRecord* r) {
     return (r->flags & OSF_RESOURCE_TYPE_MASK) == OSF_RESOURCE_TYPE_DIR;
 }
 
 bool OSF_Directory::isFile(OSF_DirRecord* r) {
     return (r->flags & OSF_RESOURCE_TYPE_MASK) == OSF_RESOURCE_TYPE_FILE;
-}
+}*/
 
 OSF_DirRecord* OSF_Directory::get(string path) {
     return searchPath(path, this);
@@ -75,7 +76,7 @@ OSF_DirRecord* OSF_Directory::searchPath(string path, OSF_Directory* dir) {
     return r;
 }
 
-OSF_Directory* OSF_Directory::getDir(string path) {
+OSF_DirectoryInterface* OSF_Directory::getDirectory(string path) {
     OSF_DirRecord* r = this->get(path);
     if (r == NULL) {
         return NULL;
@@ -103,4 +104,32 @@ OSF_FileInterface* OSF_Directory::getFile(string path) {
     return file;
 }
 
+OSF_DirectoryInterface* OSF_Directory::createDir(string name) {
+    //prepare record
+    OSF_DirHeder header;
+    OSF_DirRecord record;
+    initRecord(name, &record);
+    record.flags = OSF_RESOURCE_TYPE_DIR | ((~OSF_RESOURCE_TYPE_MASK) & record.flags) ;
+    OSF_Directory* dir = new OSF_Directory(getFileSystem(), &header, record.firstCluster);
+    this->push(&record);
+    return (OSF_DirectoryInterface*) dir;
+}
 
+OSF_FileInterface* OSF_Directory::createFile(string name){
+    //prepare record
+    OSF_FileHeder header;
+    header.fileSize = 0;
+    OSF_DirRecord record;
+    initRecord(name, &record);
+    record.flags = OSF_RESOURCE_TYPE_FILE | ((~OSF_RESOURCE_TYPE_MASK) & record.flags) ;
+    OSF_FileInterface* file = new OSF_File(getFileSystem(), &header, record.firstCluster);
+    this->push(&record);
+    return (OSF_FileInterface*) file;
+};
+
+void OSF_Directory::initRecord(string name, OSF_DirRecord* record) {
+    record->flags = OSF_DEFAULT_PERMISSION;
+    record->firstCluster = this->getFileSystem()->allocCluster();
+    strncpy(record->name, name.c_str(), sizeof(record->name));
+    record->name[ sizeof(record->name)-1 ] = 0;
+}

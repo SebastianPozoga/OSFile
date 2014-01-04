@@ -16,8 +16,23 @@ using namespace std;
 
 
 //structs
-struct OSF_DirHeder;
-struct OSF_DirRecord;
+struct OSF_DirHeder {
+};
+
+struct OSF_DirRecord {
+    //Resource name 
+    char name[20];
+    //description of the resource (type and permissions)
+    int flags;
+    //first disc cluster of resource
+    OSF_ClusterInt firstCluster;
+    //ID of resource owner
+    //(for operating system)
+    OSF_OWNER owner;
+    //Resource group ID
+    //(for operating system)
+    OSF_GID gid;
+};
 
 
 //MAIN
@@ -51,7 +66,10 @@ public:
      * @param path path of resource
      * @return resource (entry) record or NULL if resource no found
      */
-    OSF_DirRecord* get(string path);
+    virtual OSF_DirRecord* get(string path){
+        throw OSF_Exception("OSF_DirectoryInterface No implement get", 301);
+    }
+    
     /**
      * Helper: Find resource record (entry) by path
      * (the function find into sub-directories)
@@ -60,7 +78,9 @@ public:
      * @param dir the current directory
      * @return resource (entry) record or NULL if resource no found
      */
-    OSF_DirRecord* searchPath(string path, OSF_Directory* dir);
+    virtual OSF_DirRecord* searchPath(string path, OSF_DirectoryInterface* dir){
+        throw OSF_Exception("OSF_DirectoryInterface No implement searchPath", 301);
+    }
 
     /**
      * Get sub-directory by path
@@ -68,7 +88,9 @@ public:
      * @param path path to directory
      * @return OSF_Dir 
      */
-    OSF_Directory* getDir(string path);
+    virtual OSF_DirectoryInterface* getDirectory(string path){
+        throw OSF_Exception("OSF_DirectoryInterface No implement getDir", 301);
+    }
 
     /**
      * Get file by path
@@ -77,27 +99,31 @@ public:
      * @param path path to file
      * @return OSF_FileInterface* found file or NULL if file no found
      */
-    OSF_FileInterface* getFile(string path);
+    virtual OSF_FileInterface* getFile(string path){
+        throw OSF_Exception("OSF_DirectoryInterface No implement getFile", 301);
+    }
 
+    /**
+     * Create sub-directory with name
+     * 
+     * @param name directory name
+     * @return OSF_DirectoryInterface created directory 
+     */
+    virtual OSF_DirectoryInterface* createDir(string name){
+        throw OSF_Exception("OSF_DirectoryInterface No implement createDir", 301);
+    }
+
+    /**
+     * Create file with name
+     * 
+     * @param name file name
+     * @return OSF_FileInterface created file 
+     */
+    virtual OSF_FileInterface* createFile(string name){
+        throw OSF_Exception("OSF_DirectoryInterface No implement createFile", 301);
+    }
 };
 
-struct OSF_DirHeder {
-};
-
-struct OSF_DirRecord {
-    //Resource name 
-    char name[20];
-    //description of the resource (type and permissions)
-    int flags;
-    //first disc cluster of resource
-    OSF_ClusterInt firstCluster;
-    //ID of resource owner
-    //(for operating system)
-    OSF_OWNER owner;
-    //Resource group ID
-    //(for operating system)
-    OSF_GID gid;
-};
 
 #endif	/* OSF_DIRECTORYINTERFACE_H */
 

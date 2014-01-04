@@ -10,11 +10,12 @@
 
 
 #include "OSF_Types.h"
-#include "OSF_FileSystemInterface.h"
+#include "OSF_Exception.h"
+//#include "OSF_FileSystemInterface.h"
 
 //Defs
-struct OSF_FileHeder;
-struct OSF_FileRecord;
+//struct OSF_FileHeder;
+//struct OSF_FileRecord;
 
 /**
  * Header of File

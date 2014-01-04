@@ -56,6 +56,9 @@ public:
 
     bool writeHeader(OSF_FileSystemHeader* header);
 
+    OSF_DirectoryInterface* getRootDir() {
+        return (OSF_DirectoryInterface*)rootDir;
+    }
 
 };
 
