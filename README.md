@@ -1,6 +1,6 @@
 OSFile (EN)
 ======
-Easy, smart and quick to use library. Make possible create virtual file system. Can be extendend to create tree hierarchical databases, memory cache system etc
+Easy, smart and quick to use library. Make possible to create a virtual file system. Can be extendend to create tree hierarchical databases, memory cache system etc 
 You can use it for your embedded system. Overwrite OSF_VHDD class and enjoy your own file system in the microcontroller.
 
 
