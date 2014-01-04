@@ -10,6 +10,7 @@
 
 #include "OSF_Types.h"
 #include "OSF_FileSystemInterface.h"
+#include "OSF_DiskListInterface.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,14 +18,6 @@
 
 using namespace std;
 
-struct OSF_DiskListHeader {
-    OSF_ClusterInt clusterNumber;
-    OSF_ClusterInt prevCluster;
-    OSF_ClusterInt nextCluster;
-    OSF_ClusterInt recordsCount;
-    OSF_ClusterInt recordPerCluster;
-    OSF_ClusterOffset dataOffset;
-};
 
 /*
  * Cluster build:
@@ -36,7 +29,7 @@ struct OSF_DiskListHeader {
  */
 
 template<class Header, class Record>
-class OSF_DiskList {
+class OSF_DiskList : public OSF_DiskListInterface<Header, Record> {
 private:
     //File system data
     OSF_FileSystemInterface* fileSystem;

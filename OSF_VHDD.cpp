@@ -24,8 +24,10 @@ OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sect
 
     file = fopen(path.c_str(), "r+b");
     if (file == NULL) {
-        fputs("FVHDD: File open error\n", stderr);
-        throw "FVHDD: File open error\n";
+        //if file is not exist, create new 
+        OSF_VHDD(path, sectorSize, sectorCount, true);
+        //fputs("FVHDD: File open error\n", stderr);
+        //throw "FVHDD: File open error\n";
     }
 
     //fs.open(path.c_str(), std::fstream::binary);

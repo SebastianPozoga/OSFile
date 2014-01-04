@@ -44,11 +44,14 @@
  * Directory
  */
 
+#define OSF_DirIterate OSF_DiskListInterface<OSF_DirHeder, OSF_DirRecord>*
+
 /*Terms*/
 //*A "directory resource" mean file or sub-directory
 //*A "sub-directory" mean a directory which parent is current directory
 
 //Owners
+#define OSF_PERMISSION unsigned int
 #define OSF_OWNER unsigned int
 #define OSF_GID   unsigned int
 

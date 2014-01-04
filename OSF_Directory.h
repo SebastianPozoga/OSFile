@@ -99,6 +99,15 @@ public:
      * @return OSF_FileInterface created file 
      */
     OSF_FileInterface* createFile(string name);
+    
+    
+    /**
+     * get object to iterate on directory
+     * 
+     * @param name file name
+     * @return OSF_FileInterface created file 
+     */
+    OSF_DirIterate iterate();
 
 protected:
     void initRecord(string name, OSF_DirRecord* record);

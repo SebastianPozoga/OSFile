@@ -11,6 +11,7 @@
 #include "OSF_Types.h"
 #include "OSF_FileSystemInterface.h"
 #include "OSF_FileInterface.h"
+#include "OSF_DiskListInterface.h"
 
 using namespace std;
 
@@ -115,6 +116,16 @@ public:
      */
     virtual OSF_FileInterface* createFile(string name){
         throw OSF_Exception("OSF_DirectoryInterface No implement createFile", 301);
+    }
+
+    /**
+     * get object to iterate on directory
+     * 
+     * @param name file name
+     * @return OSF_FileInterface created file 
+     */
+    virtual OSF_DirIterate iterate(){
+        throw OSF_Exception("OSF_DirectoryInterface No implement iterate", 301);
     }
 };
 

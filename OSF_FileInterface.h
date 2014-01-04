@@ -24,7 +24,7 @@ struct OSF_FileHeder {
     //meta size of file
     OSF_Size fileSize;
     //description of the resource (type and permissions)
-    int permission;
+    OSF_PERMISSION permission;
     //ID of resource owner
     //(for operating system)
     OSF_OWNER owner;

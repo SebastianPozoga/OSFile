@@ -109,19 +109,19 @@ OSF_DirectoryInterface* OSF_Directory::createDir(string name) {
     OSF_DirHeder header;
     OSF_DirRecord record;
     initRecord(name, &record);
-    record.flags = OSF_RESOURCE_TYPE_DIR | ((~OSF_RESOURCE_TYPE_MASK) & record.flags) ;
+    record.flags = OSF_RESOURCE_TYPE_DIR | ((~OSF_RESOURCE_TYPE_MASK) & record.flags);
     OSF_Directory* dir = new OSF_Directory(getFileSystem(), &header, record.firstCluster);
     this->push(&record);
     return (OSF_DirectoryInterface*) dir;
 }
 
-OSF_FileInterface* OSF_Directory::createFile(string name){
+OSF_FileInterface* OSF_Directory::createFile(string name) {
     //prepare record
     OSF_FileHeder header;
     header.fileSize = 0;
     OSF_DirRecord record;
     initRecord(name, &record);
-    record.flags = OSF_RESOURCE_TYPE_FILE | ((~OSF_RESOURCE_TYPE_MASK) & record.flags) ;
+    record.flags = OSF_RESOURCE_TYPE_FILE | ((~OSF_RESOURCE_TYPE_MASK) & record.flags);
     OSF_FileInterface* file = new OSF_File(getFileSystem(), &header, record.firstCluster);
     this->push(&record);
     return (OSF_FileInterface*) file;
@@ -130,6 +130,10 @@ OSF_FileInterface* OSF_Directory::createFile(string name){
 void OSF_Directory::initRecord(string name, OSF_DirRecord* record) {
     record->flags = OSF_DEFAULT_PERMISSION;
     record->firstCluster = this->getFileSystem()->allocCluster();
-    strncpy(record->name, name.c_str(), sizeof(record->name));
-    record->name[ sizeof(record->name)-1 ] = 0;
+    strncpy(record->name, name.c_str(), sizeof (record->name));
+    record->name[ sizeof (record->name) - 1 ] = 0;
+}
+
+OSF_DirIterate OSF_Directory::iterate() {
+    return (OSF_DirIterate)this;
 }
