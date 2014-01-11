@@ -20,6 +20,30 @@
 #define plainAPIDataSectorPerCluster 2
 #define plainAPIDataFileClean false
 
+class Path{
+private:
+    string dir;
+    string nodeName;
+    
+public:
+    Path(string& path){
+        unsigned last = path.find_last_of("/");
+        dir = path.substr(0, last);
+        if(path[last]=='/'){
+            last++;
+        }
+        nodeName = path.substr(last);
+    }
+    
+    string getDir() const {
+        return dir;
+    }
+
+    string getNodeName() const {
+        return nodeName;
+    }
+};
+
 using namespace std;
 
 //Init plain API data
@@ -39,12 +63,21 @@ OSF_PlainAPIData* OSF_PlainAPI_init() {
 
 //Open File
 
-OSF_FileHandle* OSF_Open(string path) {
+OSF_FileHandle* OSF_Open(string pathStr, bool autocreate) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
-    OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
-    if(file==NULL){
+    OSF_DirectoryInterface* rootDir = plain->fs->getRootDir();
+    OSF_FileInterface* file = rootDir->getFile(pathStr);
+    if (file != NULL) {
+        return new OSF_FileHandle(file);
+    }
+    //auto create
+    if(!autocreate){
         return NULL;
     }
+    Path path(pathStr);
+    OSF_DirectoryInterface* newDir = rootDir->mkdir(path.getDir());
+    file = newDir->createFile(path.getNodeName());
+    delete newDir;
     return new OSF_FileHandle(file);
 }
 
@@ -120,7 +153,7 @@ OSF_OWNER OSF_chownFile(string path) {
 void OSF_chownFile(OSF_OWNER owner, string path) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
-    if(file==NULL){
+    if (file == NULL) {
         throw OSF_Exception("File is not exist");
     }
     OSF_FileHeder header;
@@ -149,16 +182,28 @@ void OSF_chmodFile(OSF_PERMISSION permission, string path) {
     delete file;
 }
 
-void OSF_remove(string dirPath, string filename){
+void OSF_remove(string pathStr) {
+    Path path(pathStr);
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
-    OSF_DirectoryInterface* dir = plain->fs->getRootDir()->getDirectory(dirPath);
-    if(dir==NULL){
+    OSF_DirectoryInterface* dir = NULL;
+    if (path.getDir().size() != 0) {
+        dir = plain->fs->getRootDir()->getDirectory(path.getDir());
+    } else {
+        dir = plain->fs->getRootDir();
+    }
+    if (dir == NULL) {
         throw OSF_Exception("No find directory");
     }
-    if(!dir->remove(filename)){
-        throw OSF_Exception("File "+dirPath+"/"+filename+" is not exist (or can not be deleted)");
-    };
+    if (!dir->remove(path.getNodeName())) {
+        throw OSF_Exception("File " + pathStr + " is not exist (or can not be deleted)");
+    }
     delete dir;
+}
+
+void OSF_mkdir(string pathStr){
+    OSF_PlainAPIData* plain = OSF_PlainAPI_init();
+    OSF_DirectoryInterface* rootDir = plain->fs->getRootDir();
+    rootDir->mkdir(pathStr);
 }
 
 #endif	/* OSF_PLAINAPI_CPP */

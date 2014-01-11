@@ -149,7 +149,7 @@ void testOSF_Remove(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("Init test");
     _initPlainAPI(testUnit);
     testUnit->setErrorMsg("delete error");
-    OSF_remove("d1","f1");
+    OSF_remove("d1/f1");
     testUnit->setErrorMsg("file was not deleted");
     OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
     OSF_DirRecord* r = plainAPIData->fs->getRootDir()->get("d1/f1");
@@ -157,6 +157,21 @@ void testOSF_Remove(OSF_TestUnit* testUnit) {
         testUnit->error();
     }
     delete r;
+}
+
+void testOSF_Mkdir(OSF_TestUnit* testUnit) {
+    testUnit->setErrorMsg("Init test");
+    _initPlainAPI(testUnit);
+    testUnit->setErrorMsg("delete error");
+    string path = "n1/n2/n3";
+    OSF_mkdir(path);
+    testUnit->setErrorMsg("directories was not create");
+    OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
+    OSF_DirectoryInterface* dir = plainAPIData->fs->getRootDir()->getDirectory(path);
+    if(dir!=NULL){
+        testUnit->error();
+    }
+    delete dir;
 }
 
 int main(int argc, char** argv) {
@@ -170,6 +185,7 @@ int main(int argc, char** argv) {
     testUnit.test("testOSF_chownFile", &testOSF_chownFile);
     testUnit.test("testOSF_chmodFile", &testOSF_chmodFile);
     testUnit.test("testOSF_Remove", &testOSF_Remove);
+    testUnit.test("testOSF_Mkdir", &testOSF_Mkdir);
     
     testUnit.test("testOSF_Open", &testOSF_Open);
     testUnit.test("testOSF_Close", &testOSF_Close);

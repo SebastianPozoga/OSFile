@@ -56,6 +56,7 @@ public:
      * @return resource (entry) record or NULL if resource no found
      */
     OSF_DirRecord* get(string path);
+    
     /**
      * Helper: Find resource record (entry) by path
      * (the function find into sub-directories)
@@ -116,6 +117,14 @@ public:
      * @return 
      */
     bool remove(string name);
+    
+    /**
+     * Create path directories
+     * 
+     * @param name name of file
+     * @return 
+     */
+    OSF_DirectoryInterface* mkdir(string name);
 
 protected:
     void initRecord(string name, OSF_DirRecord* record);

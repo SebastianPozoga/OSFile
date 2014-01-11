@@ -41,7 +41,7 @@ public:
     }
 };
 
-OSF_FileHandle* OSF_Open(string path);
+OSF_FileHandle* OSF_Open(string path, bool autocreate=false);
 
 void OSF_Close(OSF_FileHandle* fileHandle);
 
@@ -61,7 +61,9 @@ OSF_PERMISSION OSF_chmodFile(string path);
 
 void OSF_chmodFile(OSF_PERMISSION permission, string path);
 
-void OSF_remove(string dir, string filename);
+void OSF_remove(string pathStr);
+
+void OSF_mkdir(string pathStr);
 
 #endif	/* OSF_PLAINAPI_H */
 

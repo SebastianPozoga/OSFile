@@ -140,22 +140,22 @@ OSF_DirIterate OSF_Directory::iterate() {
     return (OSF_DirIterate)this;
 }
 
-bool OSF_Directory::remove(string name){
+bool OSF_Directory::remove(string name) {
     OSF_DiskList* iterate = (OSF_DiskList*)this;
     OSF_DirRecord popRecord;
-    if(iterate->pop(&popRecord)==NULL){
+    if (iterate->pop(&popRecord) == NULL) {
         //if no contain file
         return false;
     };
     //if first if file to delete
-    if(strcmp(popRecord.name, name.c_str())==0){
+    if (strcmp(popRecord.name, name.c_str()) == 0) {
         return true;
     }
     //search
     OSF_DirRecord record;
-    for(iterate->first(&record); iterate->current(&record)!=NULL; iterate->next(&record)){
+    for (iterate->first(&record); iterate->current(&record) != NULL; iterate->next(&record)) {
         //
-        if(strcmp(record.name, name.c_str())==0){
+        if (strcmp(record.name, name.c_str()) == 0) {
             iterate->currentWrite(&popRecord);
             return true;
         }
@@ -163,4 +163,29 @@ bool OSF_Directory::remove(string name){
     //if no exist
     iterate->push(&popRecord);
     return false;
+}
+
+OSF_DirectoryInterface* OSF_Directory::mkdir(string path) {
+    std::istringstream iss(path);
+    string name;
+    int lvl = 0;
+    OSF_DirectoryInterface* dir = this->getFileSystem()->getRootDir();
+    //iterate over path modes
+    while (getline(iss, name, '/')) {
+        //find node in current directory
+        //(iterate over directory)
+        OSF_DirRecord* record = dir->get(name);
+        OSF_DirectoryInterface* newDir = NULL;
+        if (record == NULL) {
+            newDir = createDir(name);
+        } else {
+            newDir = new OSF_Directory(getFileSystem(), record->firstCluster);
+            delete record;
+        }
+        if (lvl != 0) {
+            delete dir;
+        }
+        dir = newDir;
+    }
+    return dir;
 }

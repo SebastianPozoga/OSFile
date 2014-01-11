@@ -137,6 +137,16 @@ public:
     virtual bool remove(string name) {
         throw OSF_Exception("OSF_DirectoryInterface No implement remove", 301);
     }
+    
+    /**
+     * Create path directories
+     * 
+     * @param name name of file
+     * @return 
+     */
+    virtual OSF_DirectoryInterface* mkdir(string path) {
+        throw OSF_Exception("OSF_DirectoryInterface No implement mkdir", 301);
+    }
 };
 
 
