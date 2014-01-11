@@ -251,7 +251,7 @@ private:
 
     OSF_ClusterInt initDiskListPointers() {
         this->clusterHeader = (OSF_DiskListHeader*) this->buffer;
-        if (this->clusterHeader->dataOffset != sizeof (OSF_DiskListHeader)) {
+        if (this->clusterHeader->dataOffset > sizeof (OSF_DiskListHeader)) {
             this->header = (Header*) (&this->buffer[ sizeof (OSF_DiskListHeader) ]);
         } else {
             this->header = NULL;

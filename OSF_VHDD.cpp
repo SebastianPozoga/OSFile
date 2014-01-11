@@ -7,12 +7,6 @@
 using namespace std;
 
 OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sectorCount, bool cleanFile) : path(path), sectorSize(sectorSize), sectorCount(sectorCount) {
-    //create file
-    //file = fopen(path.c_str(), "a");
-    //fclose(file);
-    //openfile
-    // #fix for buffored read
-
     if (cleanFile) {
         file = fopen(path.c_str(), "w");
         if (file == NULL) {
@@ -26,11 +20,7 @@ OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sect
     if (file == NULL) {
         //if file is not exist, create new 
         OSF_VHDD(path, sectorSize, sectorCount, true);
-        //fputs("FVHDD: File open error\n", stderr);
-        //throw "FVHDD: File open error\n";
     }
-
-    //fs.open(path.c_str(), std::fstream::binary);
 }
 
 OSF_SectorInt OSF_VHDD::read(OSF_SectorInt sectorNumber, char* buffer, OSF_SectorInt sectorCount) {

@@ -3,6 +3,7 @@
 #define	OSF_PLAINAPI_CPP
 
 #include "OSF_Types.h"
+#include "OSF_PlainAPI.h"
 #include "OSF_VHDD.h"
 #include "OSF_FileSystem.h"
 #include "OSF_DirectoryInterface.h"
@@ -19,35 +20,6 @@
 #define plainAPIDataSectorPerCluster 2
 #define plainAPIDataFileClean false
 
-#define OSF_PlainAPIInt long int
-
-// Data for plain API adapter
-
-struct OSF_PlainAPIData {
-    OSF_VHDD* vHDD;
-    OSF_FileSystem* fs;
-};
-
-class OSF_FileHandle {
-private:
-    OSF_FileInterface* file;
-
-public:
-    OSF_PlainAPIInt pointer;
-
-    OSF_FileHandle(OSF_FileInterface* file) : file(file) {
-        this->pointer = 0;
-    }
-
-    ~OSF_FileHandle() {
-        delete this->file;
-    }
-
-    OSF_FileInterface* getFile() const {
-        return this->file;
-    }
-};
-
 using namespace std;
 
 //Init plain API data
@@ -55,6 +27,7 @@ using namespace std;
 OSF_PlainAPIData* OSF_PlainAPI_init() {
     static OSF_PlainAPIData* plainAPIData = NULL;
     if (!plainAPIData) {
+        plainAPIData = new OSF_PlainAPIData();
         plainAPIData->vHDD = new OSF_VHDD(plainAPIDataPath,
                 plainAPIDataSectorSize,
                 plainAPIDataSectorCount,
@@ -69,6 +42,9 @@ OSF_PlainAPIData* OSF_PlainAPI_init() {
 OSF_FileHandle* OSF_Open(string path) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
+    if(file==NULL){
+        return NULL;
+    }
     return new OSF_FileHandle(file);
 }
 
@@ -77,6 +53,9 @@ void OSF_Close(OSF_FileHandle* fileHandle) {
 }
 
 OSF_PlainAPIInt OSF_Read(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt count) {
+    if (fileHandle == NULL || fileHandle->getFile() == NULL) {
+        throw OSF_Exception("No open file.");
+    }
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_PlainAPIInt clusterSize = plain->fs->getClusterSize();
     //offset
@@ -95,6 +74,9 @@ OSF_PlainAPIInt OSF_Read(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt 
 }
 
 OSF_PlainAPIInt OSF_Write(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt count) {
+    if (fileHandle == NULL || fileHandle->getFile() == NULL) {
+        throw OSF_Exception("No open file.");
+    }
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_PlainAPIInt clusterSize = plain->fs->getClusterSize();
     //offset
@@ -108,19 +90,19 @@ OSF_PlainAPIInt OSF_Write(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt
     fileHandle->getFile()->read(tmp, offsetCluster, clusterCount);
     memcpy(&tmp[offsetBytes], buf, count);
     fileHandle->getFile()->write(tmp, offsetCluster, clusterCount);
-    delete tmp;
+    //delete tmp;
     return count;
 }
 
 void OSF_Ls(string path, void (*callback)(OSF_DirRecord*)) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_DirectoryInterface* dir = plain->fs->getRootDir()->getDirectory(path);
-    if(!dir){
-        throw OSF_Exception("OSF_Ls: directory no found",303);
+    if (!dir) {
+        throw OSF_Exception("OSF_Ls: directory no found", 303);
     }
     OSF_DirIterate iterate = dir->iterate();
     OSF_DirRecord rec;
-    for(iterate->first(&rec); iterate->current(&rec)!=NULL; iterate->next(&rec)){
+    for (iterate->first(&rec); iterate->current(&rec) != NULL; iterate->next(&rec)) {
         callback(&rec);
     }
     delete dir;
@@ -135,14 +117,17 @@ OSF_OWNER OSF_chownFile(string path) {
     return header.owner;
 }
 
-void OSF_chownFile(string path, OSF_OWNER owner) {
+void OSF_chownFile(OSF_OWNER owner, string path) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
+    if(file==NULL){
+        throw OSF_Exception("File is not exist");
+    }
     OSF_FileHeder header;
     file->readFileHeder(&header);
     header.owner = owner;
-    delete file;
     file->writeFileHeder(&header);
+    delete file;
 }
 
 OSF_PERMISSION OSF_chmodFile(string path) {
@@ -154,7 +139,7 @@ OSF_PERMISSION OSF_chmodFile(string path) {
     return header.permission;
 }
 
-void OSF_chmodFile(string path, OSF_PERMISSION permission) {
+void OSF_chmodFile(OSF_PERMISSION permission, string path) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
     OSF_FileHeder header;

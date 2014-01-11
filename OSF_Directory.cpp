@@ -59,7 +59,7 @@ OSF_DirRecord* OSF_Directory::searchPath(string path, OSF_Directory* dir) {
             }
             //if node is file return them
             return r;
-        } while (this->next(r) != NULL);
+        } while (dir->next(r) != NULL);
         //if node by name no found return NULL
         if (findSubDir == false) {
             if (lvl != 0) delete dir;

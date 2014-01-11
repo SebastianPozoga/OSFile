@@ -189,8 +189,6 @@ int main(int argc, char** argv) {
 
     testUnit.endTests();
 
-    std::cout << "%SUITE_FINISHED% time=0" << std::endl;
-
     return (EXIT_SUCCESS);
 }
 

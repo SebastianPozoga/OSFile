@@ -18,6 +18,7 @@
       <itemPath>OSF_FileSystem.h</itemPath>
       <itemPath>OSF_FileSystemInterface.h</itemPath>
       <itemPath>OSF_PlainAPI.cpp</itemPath>
+      <itemPath>OSF_PlainAPI.h</itemPath>
       <itemPath>OSF_TestUnit.h</itemPath>
       <itemPath>OSF_Types.h</itemPath>
       <itemPath>OSF_VHDD.cpp</itemPath>
@@ -60,6 +61,12 @@
                      projectFiles="true"
                      kind="TEST">
         <itemPath>tests/OSF_FileTest_Basic.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f6"
+                     displayName="OSF_PlainAPITest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/OSF_PlainAPITest_Basic.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="OSF_VHDD" projectFiles="true" kind="TEST">
         <itemPath>tests/OSF_VHDD_Basic.cpp</itemPath>
@@ -113,6 +120,8 @@
       </item>
       <item path="OSF_PlainAPI.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="OSF_PlainAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
@@ -204,6 +213,21 @@
           <output>${TESTDIR}/TestFiles/f5</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f6</output>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_DirectoryTest_Basic.cpp" ex="false" tool="1" flavor2="0">
@@ -213,6 +237,8 @@
       <item path="tests/OSF_FileSystemTest_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_FileTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_PlainAPITest_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_VHDD_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -265,6 +291,8 @@
       </item>
       <item path="OSF_PlainAPI.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="OSF_PlainAPI.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
@@ -356,6 +384,21 @@
           <output>${TESTDIR}/TestFiles/f5</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f6">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f6</output>
+        </linkerTool>
+      </folder>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_DirectoryTest_Basic.cpp" ex="false" tool="1" flavor2="0">
@@ -365,6 +408,8 @@
       <item path="tests/OSF_FileSystemTest_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_FileTest_Basic.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/OSF_PlainAPITest_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/OSF_VHDD_Basic.cpp" ex="false" tool="1" flavor2="0">
       </item>

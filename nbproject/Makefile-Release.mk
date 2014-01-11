@@ -52,6 +52,7 @@ TESTFILES= \
 	${TESTDIR}/TestFiles/f3 \
 	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f5 \
+	${TESTDIR}/TestFiles/f6 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -134,6 +135,10 @@ ${TESTDIR}/TestFiles/f5: ${TESTDIR}/tests/OSF_FileTest_Basic.o ${OBJECTFILES:%.o
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f5 $^ ${LDLIBSOPTIONS} 
 
+${TESTDIR}/TestFiles/f6: ${TESTDIR}/tests/OSF_PlainAPITest_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f6 $^ ${LDLIBSOPTIONS} 
+
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/OSF_VHDD_Basic.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} 
@@ -161,6 +166,12 @@ ${TESTDIR}/tests/OSF_FileTest_Basic.o: tests/OSF_FileTest_Basic.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/OSF_FileTest_Basic.o tests/OSF_FileTest_Basic.cpp
+
+
+${TESTDIR}/tests/OSF_PlainAPITest_Basic.o: tests/OSF_PlainAPITest_Basic.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I. -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/OSF_PlainAPITest_Basic.o tests/OSF_PlainAPITest_Basic.cpp
 
 
 ${TESTDIR}/tests/OSF_VHDD_Basic.o: tests/OSF_VHDD_Basic.cpp 
@@ -268,6 +279,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f5 || true; \
+	    ${TESTDIR}/TestFiles/f6 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \
