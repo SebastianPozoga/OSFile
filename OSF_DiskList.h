@@ -240,7 +240,7 @@ private:
         this->initDiskListPointers();
     }
 
-    OSF_ClusterInt initClusterHeader(OSF_ClusterInt clusterNumber) {
+    void initClusterHeader(OSF_ClusterInt clusterNumber) {
         //init pointers
         this->initDiskListPointers();
         //Counters
@@ -260,7 +260,7 @@ private:
         this->clusterHeader->prevCluster = NULL;
     }
 
-    OSF_ClusterInt initDiskListPointers() {
+    void initDiskListPointers() {
         this->clusterHeader = (OSF_DiskListHeader*) this->buffer;
         if (this->clusterHeader->dataOffset > sizeof (OSF_DiskListHeader)) {
             this->header = (Header*) (&this->buffer[ sizeof (OSF_DiskListHeader) ]);
