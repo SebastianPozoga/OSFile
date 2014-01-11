@@ -29,7 +29,7 @@ void testOSF_DiskList(OSF_TestUnit* testUnit) {
     //We create new disk list
     // (with cluster allocated)
     int value = 0x0f0f;
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_DiskList.osf", SECTOR_SIZE, 1, true);
+    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_DiskList.osf", SECTOR_SIZE, 3, true);
     Header* header = new Header;
     header->number = value;
     OSF_FileSystemHeader fsHeader;
@@ -57,7 +57,7 @@ void testOSF_DiskList2(OSF_TestUnit* testUnit) {
     //We create new disk list
     // (with cluster allocated)
     int value = 0x0f0f;
-    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_DiskList2.osf", SECTOR_SIZE, 1, true);
+    OSF_VHDD* vhdd = new OSF_VHDD("./OSF_test_data/OSF_DiskList_DiskList2.osf", SECTOR_SIZE, 3, true);
     Header* header = new Header;
     header->number = value;
     OSF_FileSystemHeader fsHeader;

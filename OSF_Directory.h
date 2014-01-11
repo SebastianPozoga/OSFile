@@ -23,17 +23,17 @@ using namespace std;
 
 
 //MAIN DEF
-class OSF_Directory : public OSF_DirectoryInterface, OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
-    
+
+class OSF_Directory : public OSF_DirectoryInterface, public OSF_DiskList<OSF_DirHeder, OSF_DirRecord> {
 private:
-    
+
 public:
     //Use exist
     OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster);
-    
+
     /*Create new list*/
     OSF_Directory(OSF_FileSystemInterface* fileSystem, OSF_DirHeder* header, OSF_ClusterInt firstCluster);
-    
+
     /**
      * Static helper: checks whether the entry is a directory
      * @param r (entry) record to test
@@ -82,7 +82,7 @@ public:
      * @return OSF_FileInterface* found file or NULL if file no found
      */
     OSF_FileInterface* getFile(string path);
-    
+
 
     /**
      * Create sub-directory with name
@@ -99,8 +99,8 @@ public:
      * @return OSF_FileInterface created file 
      */
     OSF_FileInterface* createFile(string name);
-    
-    
+
+
     /**
      * get object to iterate on directory
      * 
@@ -108,6 +108,14 @@ public:
      * @return OSF_FileInterface created file 
      */
     OSF_DirIterate iterate();
+
+    /**
+     * Remove file
+     * 
+     * @param name name of file
+     * @return 
+     */
+    bool remove(string name);
 
 protected:
     void initRecord(string name, OSF_DirRecord* record);

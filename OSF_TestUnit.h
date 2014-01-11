@@ -12,6 +12,7 @@
 #include "OSF_VHDD.h"
 #include "OSF_FileSystem.h"
 
+#include <stdlib.h>     /* system, NULL, EXIT_FAILURE */
 #include <ctime>
 #include <iostream>
 #include <time.h>
@@ -52,6 +53,7 @@ public:
         this->mkdir(OSF_TEST_PATH);
         this->currentClass = currentClass;
         this->startClassTime = this->timerStart();
+
         std::cout << "%SUITE_STARTING% " << currentClass << std::endl;
         std::cout << "%SUITE_STARTED%" << std::endl;
     }
@@ -199,8 +201,8 @@ public:
     }
 
     char* writeBufferTestData(char* buffer, long int size, long int repeatLong = 30) {
-        for(long int i=0; i<size; i++){
-            buffer[i] = (i%repeatLong)+1;
+        for (long int i = 0; i < size; i++) {
+            buffer[i] = (i % repeatLong) + 1;
         }
         return buffer;
     }
@@ -210,8 +212,8 @@ public:
     }
 
     bool testBuffer(char* buffer, long int size, long int repeatLong = 30) {
-        for(long int i=0; i<size; i++){
-            if(buffer[i] != (i%repeatLong)+1){
+        for (long int i = 0; i < size; i++) {
+            if (buffer[i] != (i % repeatLong) + 1) {
                 return false;
             }
         }

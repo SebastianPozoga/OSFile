@@ -149,4 +149,16 @@ void OSF_chmodFile(OSF_PERMISSION permission, string path) {
     delete file;
 }
 
+void OSF_remove(string dirPath, string filename){
+    OSF_PlainAPIData* plain = OSF_PlainAPI_init();
+    OSF_DirectoryInterface* dir = plain->fs->getRootDir()->getDirectory(dirPath);
+    if(dir==NULL){
+        throw OSF_Exception("No find directory");
+    }
+    if(!dir->remove(filename)){
+        throw OSF_Exception("File "+dirPath+"/"+filename+" is not exist (or can not be deleted)");
+    };
+    delete dir;
+}
+
 #endif	/* OSF_PLAINAPI_CPP */

@@ -131,6 +131,7 @@ void testOSF_chownFile(OSF_TestUnit* testUnit) {
         testUnit->error();
     }
 }
+
 void testOSF_chmodFile(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("Init test");
     _initPlainAPI(testUnit);
@@ -144,18 +145,36 @@ void testOSF_chmodFile(OSF_TestUnit* testUnit) {
     }
 }
 
+void testOSF_Remove(OSF_TestUnit* testUnit) {
+    testUnit->setErrorMsg("Init test");
+    _initPlainAPI(testUnit);
+    testUnit->setErrorMsg("delete error");
+    OSF_remove("d1","f1");
+    testUnit->setErrorMsg("file was not deleted");
+    OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
+    OSF_DirRecord* r = plainAPIData->fs->getRootDir()->get("d1/f1");
+    if(r!=NULL){
+        testUnit->error();
+    }
+    delete r;
+}
+
 int main(int argc, char** argv) {
     OSF_TestUnit testUnit;
 
+    //system("ulimit -c unlimited");
+    
     testUnit.startTests("OSF_PlainAPITest_Basic");
+    
+    testUnit.test("testOSF_LsCount", &testOSF_Ls);
+    testUnit.test("testOSF_chownFile", &testOSF_chownFile);
+    testUnit.test("testOSF_chmodFile", &testOSF_chmodFile);
+    testUnit.test("testOSF_Remove", &testOSF_Remove);
     
     testUnit.test("testOSF_Open", &testOSF_Open);
     testUnit.test("testOSF_Close", &testOSF_Close);
     testUnit.test("testOSF_Read", &testOSF_Read);
     testUnit.test("testOSF_Write", &testOSF_Write);
-    testUnit.test("testOSF_LsCount", &testOSF_Ls);
-    testUnit.test("testOSF_chownFile", &testOSF_chownFile);
-    testUnit.test("testOSF_chmodFile", &testOSF_chmodFile);
 
     testUnit.endTests();
 

@@ -8,6 +8,8 @@
 #include "OSF_Types.h"
 #include "OSF_FileSystemInterface.h"
 #include "OSF_DirectoryInterface.h"
+
+#include "OSF_DiskList.h"
 #include "OSF_Directory.h"
 #include "OSF_File.h"
 
@@ -136,4 +138,29 @@ void OSF_Directory::initRecord(string name, OSF_DirRecord* record) {
 
 OSF_DirIterate OSF_Directory::iterate() {
     return (OSF_DirIterate)this;
+}
+
+bool OSF_Directory::remove(string name){
+    OSF_DiskList* iterate = (OSF_DiskList*)this;
+    OSF_DirRecord popRecord;
+    if(iterate->pop(&popRecord)==NULL){
+        //if no contain file
+        return false;
+    };
+    //if first if file to delete
+    if(strcmp(popRecord.name, name.c_str())==0){
+        return true;
+    }
+    //search
+    OSF_DirRecord record;
+    for(iterate->first(&record); iterate->current(&record)!=NULL; iterate->next(&record)){
+        //
+        if(strcmp(record.name, name.c_str())==0){
+            iterate->currentWrite(&popRecord);
+            return true;
+        }
+    }
+    //if no exist
+    iterate->push(&popRecord);
+    return false;
 }

@@ -6,6 +6,14 @@
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_DirectoryInterface.h</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_TestUnit.h</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_Directory.cpp</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/tests/OSF_PlainAPITest_Basic.cpp</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_FileSystem.cpp</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_Types.h</file>
+            <file>file:/home/spozoga/NetBeansProjects/OSF/OSF_DiskList.h</file>
+        </group>
     </open-files>
 </project-private>

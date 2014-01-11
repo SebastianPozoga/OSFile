@@ -65,7 +65,9 @@ public:
     /*Create new list*/
     OSF_DiskList(OSF_FileSystemInterface* fileSystem, Header* header, OSF_ClusterInt firstCluster) : fileSystem(fileSystem) {
         //init buffor
-        this->buffer = (char*) malloc(this->fileSystem->getClusterSize());
+        OSF_MemorySize bufferSize = this->fileSystem->getClusterSize();
+        this->buffer = OSF_allocMemory(bufferSize);
+        //this->buffer = (char*) malloc(this->fileSystem->getClusterSize());
         this->clusterHeader = (OSF_DiskListHeader*) buffer;
         //create new
         this->firstCluster = firstCluster;
@@ -173,6 +175,15 @@ public:
         memcpy(r, &this->clusterRecords[this->iterationRecord], sizeof (Record));
         return r;
     }
+    
+    Record* currentWrite(Record* r) {
+        this->loadCluster(this->iterationCluster);
+        if (this->iterationRecord >= this->clusterHeader->recordsCount) {
+            return NULL;
+        }
+        memcpy(&this->clusterRecords[this->iterationRecord], r, sizeof (Record));
+        return r;
+    }
 
     Record* next(Record* r) {
         this->loadCluster(this->iterationCluster);
@@ -199,7 +210,7 @@ public:
     }
 
     virtual ~OSF_DiskList() {
-        free(this->buffer);
+        OSF_freeMemory(this->buffer);
     }
 
     OSF_FileSystemInterface* getFileSystem() const {

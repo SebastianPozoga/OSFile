@@ -61,5 +61,7 @@ OSF_PERMISSION OSF_chmodFile(string path);
 
 void OSF_chmodFile(OSF_PERMISSION permission, string path);
 
+void OSF_remove(string dir, string filename);
+
 #endif	/* OSF_PLAINAPI_H */
 

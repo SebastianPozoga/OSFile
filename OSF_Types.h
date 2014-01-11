@@ -20,6 +20,15 @@
 //Represented sector size
 #define OSF_SectorSizeInt unsigned int
 
+/*
+ * Memory
+ */
+#define OSF_Memory char*
+#define OSF_MemorySize unsigned int
+
+#define OSF_allocMemory(size) new char[size]
+#define OSF_freeMemory(handle) delete handle
+
 
 /**
  * File System

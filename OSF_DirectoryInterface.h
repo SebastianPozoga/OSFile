@@ -127,6 +127,16 @@ public:
     virtual OSF_DirIterate iterate(){
         throw OSF_Exception("OSF_DirectoryInterface No implement iterate", 301);
     }
+    
+    /**
+     * Remove file
+     * 
+     * @param name name of file
+     * @return 
+     */
+    virtual bool remove(string name) {
+        throw OSF_Exception("OSF_DirectoryInterface No implement remove", 301);
+    }
 };
 
 
