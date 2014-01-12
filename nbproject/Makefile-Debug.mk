@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/OSF_File.o \
 	${OBJECTDIR}/OSF_FileSystem.o \
 	${OBJECTDIR}/OSF_PlainAPI.o \
+	${OBJECTDIR}/OSF_Types.o \
 	${OBJECTDIR}/OSF_VHDD.o \
 	${OBJECTDIR}/main.o
 
@@ -103,6 +104,11 @@ ${OBJECTDIR}/OSF_PlainAPI.o: OSF_PlainAPI.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/OSF_PlainAPI.o OSF_PlainAPI.cpp
+
+${OBJECTDIR}/OSF_Types.o: OSF_Types.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/OSF_Types.o OSF_Types.cpp
 
 ${OBJECTDIR}/OSF_VHDD.o: OSF_VHDD.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -243,6 +249,19 @@ ${OBJECTDIR}/OSF_PlainAPI_nomain.o: ${OBJECTDIR}/OSF_PlainAPI.o OSF_PlainAPI.cpp
 	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/OSF_PlainAPI_nomain.o OSF_PlainAPI.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/OSF_PlainAPI.o ${OBJECTDIR}/OSF_PlainAPI_nomain.o;\
+	fi
+
+${OBJECTDIR}/OSF_Types_nomain.o: ${OBJECTDIR}/OSF_Types.o OSF_Types.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/OSF_Types.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/OSF_Types_nomain.o OSF_Types.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/OSF_Types.o ${OBJECTDIR}/OSF_Types_nomain.o;\
 	fi
 
 ${OBJECTDIR}/OSF_VHDD_nomain.o: ${OBJECTDIR}/OSF_VHDD.o OSF_VHDD.cpp 

@@ -101,7 +101,7 @@ OSF_PlainAPIInt OSF_Read(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt 
     char* tmp = new char[tmpSize];
     OSF_PlainAPIInt readed = fileHandle->getFile()->read(tmp, offsetCluster, clusterCount);
     readed = readed * clusterSize - offsetCluster;
-    memcpy(buf, &tmp[offsetBytes], count);
+    OSF_Cpy(buf, &tmp[offsetBytes], count);
     delete tmp;
     return readed;
 }
@@ -121,7 +121,7 @@ OSF_PlainAPIInt OSF_Write(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt
     OSF_PlainAPIInt tmpSize = clusterCount*clusterSize;
     char* tmp = new char[tmpSize];
     fileHandle->getFile()->read(tmp, offsetCluster, clusterCount);
-    memcpy(&tmp[offsetBytes], buf, count);
+    OSF_Cpy(&tmp[offsetBytes], buf, count);
     fileHandle->getFile()->write(tmp, offsetCluster, clusterCount);
     //delete tmp;
     return count;

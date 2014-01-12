@@ -12,8 +12,8 @@ OSF_FileSystem::OSF_FileSystem(OSF_VHDDInterface* vHDD, OSF_FileSystemHeader* ba
     this->header = new OSF_FileSystemHeader;
     this->header->clusterCount = vHDD->getSectorCount() / sectorsForDiskCluster;
     this->header->allocPointer = 2;
-    strncpy(this->header->systemName, "SPFileSystem v1.0", sizeof (this->header->systemName));
-    strncpy(this->header->diskName, baseHeader->diskName, sizeof(this->header->diskName)-1);
+    OSF_SCpy(this->header->systemName, "SPFileSystem v1.0");
+    OSF_SCpy(this->header->diskName, baseHeader->diskName);
     this->allocList = new OSF_DiskList<OSF_FileSystemHeader, OSF_FileSystemRecord>((OSF_FileSystem*)this, this->header, 0);
     //this->rootDir->writeHeader(this->header);
     //root dir

@@ -20,6 +20,7 @@
       <itemPath>OSF_PlainAPI.cpp</itemPath>
       <itemPath>OSF_PlainAPI.h</itemPath>
       <itemPath>OSF_TestUnit.h</itemPath>
+      <itemPath>OSF_Types.cpp</itemPath>
       <itemPath>OSF_Types.h</itemPath>
       <itemPath>OSF_VHDD.cpp</itemPath>
       <itemPath>OSF_VHDD.h</itemPath>
@@ -123,6 +124,8 @@
       <item path="OSF_PlainAPI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Types.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -294,6 +297,8 @@
       <item path="OSF_PlainAPI.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OSF_TestUnit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OSF_Types.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="OSF_Types.h" ex="false" tool="3" flavor2="0">
       </item>

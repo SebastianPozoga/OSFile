@@ -29,6 +29,12 @@
 #define OSF_allocMemory(size) new char[size]
 #define OSF_freeMemory(handle) delete handle
 
+void OSF_MemoryCopy(OSF_Memory des, OSF_Memory source, unsigned int size);
+#define OSF_Cpy(des, src, size) OSF_MemoryCopy((OSF_Memory) des,(OSF_Memory) src, size)
+#define OSF_OCpy(des, src) OSF_MemoryCopy((OSF_Memory) des,(OSF_Memory) src, sizeof(*des))
+
+void OSF_StrCopy(char* des, char* source, unsigned int size=100);
+#define OSF_SCpy(des, src) OSF_StrCopy(des,src, sizeof(*des))
 
 /**
  * File System

@@ -18,7 +18,7 @@ OSF_PlainAPIData* _initPlainAPI(OSF_TestUnit* testUnit) {
     delete plainAPIData->vHDD;
     plainAPIData->vHDD = new OSF_VHDD(testUnit->filePath("PlainAPI"), 128, 20, true);
     OSF_FileSystemHeader header;
-    strcpy(header.diskName, "testDisk");
+    OSF_SCpy(header.diskName, "testDisk");
     plainAPIData->fs = new OSF_FileSystem(plainAPIData->vHDD, &header, 2);
     //insert default data
     //directories
