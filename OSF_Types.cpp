@@ -1,22 +1,17 @@
 
 #include "OSF_Types.h"
 
-#include <iostream>
-
-void OSF_MemoryCopy(OSF_Memory des, OSF_Memory source, unsigned int size) {
-    unsigned i = 0;
-    for (; i < size; i++) {
-        des[i] = source[i];
+void OSF_MemCpy(OSF_Memory dest, OSF_Memory src, OSF_MemorySize size){
+    for(int i=0; i<size; i++){
+        dest[i] = src[i];
     }
-    std::cout<<"size to cpy: "<<size;
 }
 
-void OSF_StrCopy(OSF_Memory des, OSF_Memory source, unsigned int size) {
-    unsigned i = 0;
-    for (; i < size; i++) {
-        des[i] = source[i];
-        if (source[i] == '\0') break;
+void OSF_StringCpy(OSF_Memory dest, OSF_Memory src, OSF_MemorySize size){
+    for(int i=0; i<size; i++){
+        dest[i] = src[i];
+        if(src[i]=='\0') return;
     }
-    des[i] = '\0';
-    std::cout<<"size to cpy: "<<size;
+    dest[size-1] = '\0';
 }
+

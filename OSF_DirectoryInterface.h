@@ -25,6 +25,8 @@ struct OSF_DirRecord {
     char name[20];
     //description of the resource (type and permissions)
     int flags;
+    //owner
+    OSF_OWNER owner;
     //first disc cluster of resource
     OSF_ClusterInt firstCluster;
 };

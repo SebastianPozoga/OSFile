@@ -8,7 +8,7 @@ using namespace std;
 
 OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sectorCount, bool cleanFile) : path(path), sectorSize(sectorSize), sectorCount(sectorCount) {
     if (cleanFile) {
-        file = fopen(path.c_str(), "w");
+        file = fopen(path.c_str(), "wb");
         if (file == NULL) {
             fputs("FVHDD: File open error\n", stderr);
             throw "FVHDD: File open error\n";
@@ -24,17 +24,10 @@ OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sect
 }
 
 OSF_SectorInt OSF_VHDD::read(OSF_SectorInt sectorNumber, char* buffer, OSF_SectorInt sectorCount) {
+    if(sectorNumber+sectorCount-1>getSectorCount()){
+        throw OSF_Exception("Read access to no exist sector", 420);
+    }
     OSF_SectorSizeInt sSize = sectorCount * sectorSize;
-    /*fs.seekg(sectorNumber*sectorSize, fs.end);
-    fs.read(buffer,sSize);*/
-
-
-//    FILE *file = fopen(path.c_str(), "rb");
-//    if (file == NULL) {
-//        fputs("FVHDD: File open error\n", stderr);
-//        throw "FVHDD: File open error\n";
-//    }
-
     fseek(file, sectorNumber*sectorSize, SEEK_SET);
     int r = fread(buffer, 1, sSize, file);
     //fclose(file);
@@ -42,20 +35,13 @@ OSF_SectorInt OSF_VHDD::read(OSF_SectorInt sectorNumber, char* buffer, OSF_Secto
 }
 
 OSF_SectorInt OSF_VHDD::write(OSF_SectorInt sectorNumber, char* buffer, OSF_SectorInt sectorCount) {
+    if(sectorNumber+sectorCount-1>getSectorCount()){
+        throw OSF_Exception("Write access to no exist sector", 420);
+    }
     OSF_SectorSizeInt sSize = sectorCount * sectorSize;
-    /*fs.seekp(sectorNumber*sectorSize, fs.end);
-    fs.write(buffer,sSize);
-    fs.flush();*/
-
-//    FILE *file = fopen(path.c_str(), "r+b");
-//    if (file == NULL) {
-//        fputs("FVHDD: File open error\n", stderr);
-//        throw "FVHDD: File open error\n";
-//    }
-
     fseek(file, sectorNumber*sectorSize, SEEK_SET);
     int r = fwrite(buffer, 1, sSize, file);
-    //fflush(file);
+    fflush(file);
     //fclose(file);
     return r;
 }

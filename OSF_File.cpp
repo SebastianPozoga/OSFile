@@ -32,7 +32,13 @@ OSF_ClusterInt OSF_File::read(OSF_Buffer ptr, OSF_ClusterInt firstToRead, OSF_Cl
     OSF_ClusterInt readedCluster = 0;
     char* bufferPtr = (char*) ptr;
     for (int i = 0; i < count && current(&record); i++, next(&record)) {
-        this->getFileSystem()->read(record.cluster, bufferPtr, 1);
+        try {
+            this->getFileSystem()->read(record.cluster, bufferPtr, 1);
+        } catch (OSF_Exception ex) {
+            if (ex.getCode() != 420) {
+                throw ex;
+            }
+        }
         bufferPtr = &bufferPtr[clusterSize];
         readedCluster++;
     }
@@ -43,7 +49,7 @@ OSF_ClusterInt OSF_File::write(OSF_Buffer ptr, OSF_ClusterInt firstToWrite, OSF_
     int c = 0;
     ////skip
     OSF_FileRecord record;
-    
+
     first(&record);
     for (; c < firstToWrite && current(&record); c++, next(&record));
     for (; c < firstToWrite; c++, next(&record)) {

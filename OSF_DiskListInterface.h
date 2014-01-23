@@ -14,12 +14,12 @@
 using namespace std;
 
 struct OSF_DiskListHeader {
-    OSF_ClusterInt clusterNumber;
+    //OSF_ClusterInt clusterNumber;
     OSF_ClusterInt prevCluster;
     OSF_ClusterInt nextCluster;
     OSF_ClusterInt recordsCount;
-    OSF_ClusterInt recordPerCluster;
-    OSF_ClusterOffset dataOffset;
+    //OSF_ClusterInt recordPerCluster;
+    //OSF_ClusterOffset dataOffset;
 };
 
 class OSF_FileSystemInterface;

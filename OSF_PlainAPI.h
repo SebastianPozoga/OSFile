@@ -41,17 +41,21 @@ public:
     }
 };
 
-OSF_FileHandle* OSF_Open(string path, bool autocreate=false);
+OSF_FileHandle* OSF_Open(string path, bool autocreate = false);
 
 void OSF_Close(OSF_FileHandle* fileHandle);
 
+OSF_PlainAPIData* OSF_PlainAPI_createNew();
+
 OSF_PlainAPIData* OSF_PlainAPI_init();
+
+void OSF_PlainAPI_close();
 
 OSF_PlainAPIInt OSF_Read(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt count);
 
 OSF_PlainAPIInt OSF_Write(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt count);
 
-void OSF_Ls(string path, void (*callback)(OSF_DirRecord*));
+bool OSF_Ls(string path, void (*callback)(OSF_DirRecord*));
 
 OSF_OWNER OSF_chownFile(string path);
 

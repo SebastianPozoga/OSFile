@@ -20,21 +20,22 @@
 #define plainAPIDataSectorPerCluster 2
 #define plainAPIDataFileClean false
 
-class Path{
+class Path {
 private:
     string dir;
     string nodeName;
-    
+
 public:
-    Path(string& path){
+
+    Path(string& path) {
         unsigned last = path.find_last_of("/");
         dir = path.substr(0, last);
-        if(path[last]=='/'){
+        if (path[last] == '/') {
             last++;
         }
         nodeName = path.substr(last);
     }
-    
+
     string getDir() const {
         return dir;
     }
@@ -47,6 +48,20 @@ public:
 using namespace std;
 
 //Init plain API data
+
+OSF_PlainAPIData* OSF_PlainAPI_createNew() {
+    static OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
+    delete plainAPIData->fs;
+    delete plainAPIData->vHDD;
+    plainAPIData->vHDD = new OSF_VHDD(plainAPIDataPath,
+            plainAPIDataSectorSize,
+            plainAPIDataSectorCount,
+            true);
+    OSF_FileSystemHeader head;
+    OSF_scpy(head.diskName, "OSFPlain");
+    plainAPIData->fs = new OSF_FileSystem(plainAPIData->vHDD, &head, plainAPIDataSectorPerCluster);
+    return plainAPIData;
+}
 
 OSF_PlainAPIData* OSF_PlainAPI_init() {
     static OSF_PlainAPIData* plainAPIData = NULL;
@@ -61,6 +76,12 @@ OSF_PlainAPIData* OSF_PlainAPI_init() {
     return plainAPIData;
 }
 
+void OSF_PlainAPI_close() {
+    static OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
+    delete plainAPIData->fs;
+    delete plainAPIData->vHDD;
+}
+
 //Open File
 
 OSF_FileHandle* OSF_Open(string pathStr, bool autocreate) {
@@ -71,13 +92,15 @@ OSF_FileHandle* OSF_Open(string pathStr, bool autocreate) {
         return new OSF_FileHandle(file);
     }
     //auto create
-    if(!autocreate){
+    if (!autocreate) {
         return NULL;
     }
     Path path(pathStr);
     OSF_DirectoryInterface* newDir = rootDir->mkdir(path.getDir());
     file = newDir->createFile(path.getNodeName());
-    delete newDir;
+    if (rootDir != newDir) {
+        delete newDir;
+    }
     return new OSF_FileHandle(file);
 }
 
@@ -96,12 +119,13 @@ OSF_PlainAPIInt OSF_Read(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt 
     OSF_PlainAPIInt offsetBytes = fileHandle->pointer % clusterSize;
     //size
     OSF_PlainAPIInt clusterCount = (offsetBytes + count) / clusterSize;
+    clusterCount += ((offsetBytes + count) % clusterSize) != 0 ? 1 : 0;
     //read
     OSF_PlainAPIInt tmpSize = clusterCount*clusterSize;
     char* tmp = new char[tmpSize];
     OSF_PlainAPIInt readed = fileHandle->getFile()->read(tmp, offsetCluster, clusterCount);
     readed = readed * clusterSize - offsetCluster;
-    OSF_Cpy(buf, &tmp[offsetBytes], count);
+    OSF_cpy(buf, &tmp[offsetBytes], count);
     delete tmp;
     return readed;
 }
@@ -117,28 +141,41 @@ OSF_PlainAPIInt OSF_Write(OSF_FileHandle* fileHandle, void* buf, OSF_PlainAPIInt
     OSF_PlainAPIInt offsetBytes = fileHandle->pointer % clusterSize;
     //size
     OSF_PlainAPIInt clusterCount = (offsetBytes + count) / clusterSize;
+    clusterCount += ((offsetBytes + count) % clusterSize) != 0 ? 1 : 0;
     //read
     OSF_PlainAPIInt tmpSize = clusterCount*clusterSize;
     char* tmp = new char[tmpSize];
     fileHandle->getFile()->read(tmp, offsetCluster, clusterCount);
-    OSF_Cpy(&tmp[offsetBytes], buf, count);
+    OSF_cpy(&tmp[offsetBytes], buf, count);
     fileHandle->getFile()->write(tmp, offsetCluster, clusterCount);
     //delete tmp;
     return count;
 }
 
-void OSF_Ls(string path, void (*callback)(OSF_DirRecord*)) {
-    OSF_PlainAPIData* plain = OSF_PlainAPI_init();
-    OSF_DirectoryInterface* dir = plain->fs->getRootDir()->getDirectory(path);
-    if (!dir) {
-        throw OSF_Exception("OSF_Ls: directory no found", 303);
+bool OSF_Ls(string path, void (*callback)(OSF_DirRecord*)) {
+    try {
+        OSF_PlainAPIData* plain = OSF_PlainAPI_init();
+        OSF_DirectoryInterface* dir = NULL;
+        if (path == "" || path == "/") {
+            dir = plain->fs->getRootDir();
+        } else {
+            dir = plain->fs->getRootDir()->getDirectory(path);
+        }
+        if (!dir) {
+            throw OSF_Exception("OSF_Ls: directory no found", 303);
+        }
+        OSF_DirIterate iterate = dir->iterate();
+        OSF_DirRecord rec;
+        for (iterate->first(&rec); iterate->current(&rec) != NULL; iterate->next(&rec)) {
+            callback(&rec);
+        }
+        if (plain->fs->getRootDir() != dir) {
+            delete dir;
+        }
+        return true;
+    } catch (OSF_Exception ex) {
+        return false;
     }
-    OSF_DirIterate iterate = dir->iterate();
-    OSF_DirRecord rec;
-    for (iterate->first(&rec); iterate->current(&rec) != NULL; iterate->next(&rec)) {
-        callback(&rec);
-    }
-    delete dir;
 }
 
 OSF_OWNER OSF_chownFile(string path) {
@@ -152,7 +189,7 @@ OSF_OWNER OSF_chownFile(string path) {
 
 void OSF_chownFile(OSF_OWNER owner, string path) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
-    OSF_FileInterface* file = plain->fs->getRootDir()->getFile(path);
+    OSF_File* file = (OSF_File*) plain->fs->getRootDir()->getFile(path);
     if (file == NULL) {
         throw OSF_Exception("File is not exist");
     }
@@ -200,7 +237,7 @@ void OSF_remove(string pathStr) {
     delete dir;
 }
 
-void OSF_mkdir(string pathStr){
+void OSF_mkdir(string pathStr) {
     OSF_PlainAPIData* plain = OSF_PlainAPI_init();
     OSF_DirectoryInterface* rootDir = plain->fs->getRootDir();
     rootDir->mkdir(pathStr);

@@ -37,6 +37,9 @@ OSF_DirRecord* OSF_Directory::get(string path) {
     return searchPath(path, this);
 }
 
+/*
+ * Never return root dir
+ */
 OSF_DirRecord* OSF_Directory::searchPath(string path, OSF_Directory* dir) {
     OSF_DirRecord* r = new OSF_DirRecord;
     std::istringstream iss(path);
@@ -45,6 +48,9 @@ OSF_DirRecord* OSF_Directory::searchPath(string path, OSF_Directory* dir) {
     //OSF_Dir subDir = NULL;
     //iterate over path modes
     while (getline(iss, name, '/')) {
+        if (name == "") {
+            continue;
+        }
         //find node in current directory
         //(iterate over directory)
         dir->first(r);
@@ -132,8 +138,11 @@ OSF_FileInterface* OSF_Directory::createFile(string name) {
 void OSF_Directory::initRecord(string name, OSF_DirRecord* record) {
     record->flags = OSF_DEFAULT_PERMISSION;
     record->firstCluster = this->getFileSystem()->allocCluster();
-    strncpy(record->name, name.c_str(), sizeof (record->name));
-    record->name[ sizeof (record->name) - 1 ] = 0;
+    if (this->getFileSystem()->allocCluster() == NULL) {
+        throw OSF_Exception("No allocate cluster");
+    }
+    record->owner = NULL;
+    OSF_scpy(record->name, name.c_str());
 }
 
 OSF_DirIterate OSF_Directory::iterate() {
@@ -172,12 +181,15 @@ OSF_DirectoryInterface* OSF_Directory::mkdir(string path) {
     OSF_DirectoryInterface* dir = this->getFileSystem()->getRootDir();
     //iterate over path modes
     while (getline(iss, name, '/')) {
+        if (name == "") {
+            continue;
+        }
         //find node in current directory
         //(iterate over directory)
         OSF_DirRecord* record = dir->get(name);
         OSF_DirectoryInterface* newDir = NULL;
         if (record == NULL) {
-            newDir = createDir(name);
+            newDir = dir->createDir(name);
         } else {
             newDir = new OSF_Directory(getFileSystem(), record->firstCluster);
             delete record;
@@ -185,6 +197,7 @@ OSF_DirectoryInterface* OSF_Directory::mkdir(string path) {
         if (lvl != 0) {
             delete dir;
         }
+        ++lvl;
         dir = newDir;
     }
     return dir;

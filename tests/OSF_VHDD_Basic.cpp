@@ -29,7 +29,7 @@ void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_VHDD_read.osf";
     int sectorCount = 2;
     int blockSize = SECTOR_SIZE*sectorCount;
-    char* buffer = (char*) malloc(blockSize);
+    OSF_Memory buffer = OSF_allocMemory(blockSize);
     for (int i = 0; i < blockSize; i++) {
         buffer[i] = (char) i;
     }
@@ -54,7 +54,7 @@ void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     if (!valid) {
         testUnit->error("read error");
     }
-    free(buffer);
+    OSF_freeMemory(buffer);
 }
 
 void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
@@ -62,7 +62,7 @@ void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     //Init VHDD 
     OSF_VHDD vhdd(path, SECTOR_SIZE, 2, true);
     //Create default data
-    char* buffer = (char*) malloc(SECTOR_SIZE);
+    OSF_Memory buffer = OSF_allocMemory(SECTOR_SIZE);
     for (int i = 0; i < SECTOR_SIZE; i++) {
         buffer[i] = (char) i;
     }
@@ -85,7 +85,7 @@ void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     if (!valid) {
         testUnit->error("write error");
     }
-    free(buffer);
+    OSF_freeMemory(buffer);
 }
 
 int main(int argc, char** argv) {

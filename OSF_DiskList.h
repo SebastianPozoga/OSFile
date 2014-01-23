@@ -18,7 +18,6 @@
 
 using namespace std;
 
-
 /*
  * Cluster build:
  * 
@@ -43,39 +42,51 @@ private:
     char* buffer;
     OSF_DiskListHeader* clusterHeader;
     Header* header;
+    OSF_ClusterInt recordPerCluster;
     Record* clusterRecords;
 
 public:
 
-    /*Load list*/
+    /**
+     * Create object represented exist structure.
+     * 
+     * @param fileSystem handle to file system
+     * @param firstCluster number of first cluster of the stucture
+     */
     OSF_DiskList(OSF_FileSystemInterface* fileSystem, OSF_ClusterInt firstCluster) : fileSystem(fileSystem), firstCluster(firstCluster) {
         //init buffor
         OSF_ClusterInt clusterSize = fileSystem->getClusterSize();
         this->buffer = OSF_allocMemory(clusterSize);
-        this->clusterHeader = (OSF_DiskListHeader*) buffer;
         //load data
-        this->loadCluster(firstCluster);
+        this->_loadCluster(firstCluster);
         //init
         this->init();
     }
 
+    /**
+     * Init after create structure object
+     */
     virtual void init() {
     }
 
-    /*Create new list*/
-    OSF_DiskList(OSF_FileSystemInterface* fileSystem, Header* header, OSF_ClusterInt firstCluster) : fileSystem(fileSystem) {
+    /**
+     * Create new object
+     * 
+     * @param fileSystem handle to file system
+     * @param header header of the object
+     * @param firstCluster first cluster on disk
+     */
+    OSF_DiskList(OSF_FileSystemInterface* fileSystem, Header* header, OSF_ClusterInt firstCluster) : fileSystem(fileSystem), firstCluster(firstCluster) {
         //init buffor
-        OSF_MemorySize bufferSize = this->fileSystem->getClusterSize();
-        this->buffer = OSF_allocMemory(bufferSize);
-        this->clusterHeader = (OSF_DiskListHeader*) buffer;
+        OSF_MemorySize clusterSize = this->fileSystem->getClusterSize();
+        this->buffer = OSF_allocMemory(clusterSize);
         //create new
-        this->firstCluster = firstCluster;
-        this->currentCluster = firstCluster;
-        this->initClusterHeader(this->firstCluster);
+        this->initCluster(this->firstCluster);
         if (header != NULL) {
-            this->writeHeader(header);
+            this->_writeHeader(header);
         }
         //init & persist
+        this->persist();
         this->initNew();
         this->persist();
         this->init();
@@ -88,18 +99,22 @@ public:
         //Header* header = malloc(sizeof (Header));
         this->loadCluster(this->firstCluster);
         if (this->header == NULL) {
-            return NULL;
+            throw OSF_Exception("no load first cluster");
         }
-        OSF_Cpy(header, this->header, sizeof (Header));
+        OSF_cpy(header, this->header, sizeof(Header));
         return header;
     }
 
     Header* writeHeader(Header* header) {
         this->loadCluster(firstCluster);
         if (this->header == NULL) {
-            return NULL;
+            throw OSF_Exception("no load first cluster");
         }
-        OSF_Cpy(this->header, header, sizeof (Header));
+        _writeHeader(header);
+    }
+
+    Header* _writeHeader(Header* header) {
+        OSF_cpy(this->header, header, sizeof(Header));
         this->persist();
         return header;
     }
@@ -111,22 +126,22 @@ public:
         while (this->clusterHeader->nextCluster != NULL) {
             this->loadCluster(this->clusterHeader->nextCluster);
         }
-        if (this->clusterHeader->recordPerCluster <= this->clusterHeader->recordsCount) {
-            //register new cluster
-            OSF_ClusterInt prevClusterNumber = this->currentCluster;
+        if (this->recordPerCluster <= this->clusterHeader->recordsCount) {
+            //alloc
             OSF_ClusterInt newClusterNumber = this->getFileSystem()->allocCluster();
-            //add next cluster data
+            OSF_ClusterInt prevClusterNumber = this->currentCluster;
+            //update current cluster metadata
             this->clusterHeader->nextCluster = newClusterNumber;
             this->persist();
-            //init new cluster
-            this->loadCluster(newClusterNumber);
-            this->initClusterHeader(newClusterNumber);
+            //create new
+            //this->loadCluster(newClusterNumber);
+            this->initCluster(newClusterNumber);
             this->clusterHeader->prevCluster = prevClusterNumber;
-            this->persist();
+            //this->persist();
         }
         //add record
         Record* newRecord = &this->clusterRecords[this->clusterHeader->recordsCount];
-        OSF_Cpy(newRecord, r, sizeof (Record));
+        OSF_cpy(newRecord, r, sizeof (Record));
         ++this->clusterHeader->recordsCount;
         this->persist();
         return r;
@@ -142,17 +157,18 @@ public:
             if (this->firstCluster == this->currentCluster) {
                 return NULL;
             }
-            //remove cluster
             OSF_ClusterInt prevCluster = this->clusterHeader->prevCluster;
+            //remove cluster
             this->getFileSystem()->freeCluster(this->currentCluster);
+            //update prev
             this->loadCluster(prevCluster);
-            //this->clusterHeader->nextCluster = NULL;
+            this->clusterHeader->nextCluster = NULL;
+            //this->persist();
         }
         //add record
-        this->clusterHeader->nextCluster = NULL; //never has next 
         --this->clusterHeader->recordsCount;
         Record* pointer = &this->clusterRecords[this->clusterHeader->recordsCount];
-        OSF_Cpy(r, pointer, sizeof (Record));
+        OSF_cpy(r, pointer, sizeof (Record));
         this->persist();
         return r;
     }
@@ -161,7 +177,6 @@ public:
     Record* first(Record* r) {
         this->iterationCluster = this->firstCluster;
         this->iterationRecord = 0;
-        //this->loadCluster(firstCluster);
         return this->current(r);
     }
 
@@ -169,19 +184,18 @@ public:
         this->loadCluster(this->iterationCluster);
         if (this->iterationRecord >= this->clusterHeader->recordsCount) {
             return NULL;
-            //this->loadCluster(this->clusterHeader->nextCluster);
-            //this->iterationRecord = 0;
         }
-        OSF_Cpy(r, &this->clusterRecords[this->iterationRecord], sizeof (Record));
+        OSF_cpy(r, &this->clusterRecords[this->iterationRecord], sizeof (Record));
         return r;
     }
-    
+
     Record* currentWrite(Record* r) {
         this->loadCluster(this->iterationCluster);
         if (this->iterationRecord >= this->clusterHeader->recordsCount) {
             return NULL;
         }
-        OSF_Cpy(&this->clusterRecords[this->iterationRecord], r, sizeof (Record));
+        OSF_cpy(&this->clusterRecords[this->iterationRecord], r, sizeof (Record));
+        persist();
         return r;
     }
 
@@ -193,13 +207,12 @@ public:
         }
         ++this->iterationRecord;
         if (this->current(r) == NULL) {
-            if (this->clusterHeader->nextCluster != NULL) {
-                this->iterationCluster = this->clusterHeader->nextCluster;
-                this->iterationRecord = 0;
-                return this->current(r);
-            } else {
+            if (this->clusterHeader->nextCluster == NULL) {
                 return NULL;
             }
+            this->iterationCluster = this->clusterHeader->nextCluster;
+            this->iterationRecord = 0;
+            return this->current(r);
         };
         return r;
     }
@@ -231,44 +244,61 @@ protected:
 
 private:
 
-    void loadCluster(OSF_ClusterInt clusterNumber, bool cache=true) {
-        if (clusterNumber == this->currentCluster && cache) {
+    void loadCluster(OSF_ClusterInt clusterNumber) {
+        if (clusterNumber == this->currentCluster) {
             return;
         }
-        this->currentCluster = clusterNumber;
-        this->getFileSystem()->read(clusterNumber, this->buffer);
-        this->initDiskListPointers(clusterNumber);
+        _loadCluster(clusterNumber);
     }
 
-    void initClusterHeader(OSF_ClusterInt clusterNumber) {
+    void _loadCluster(OSF_ClusterInt clusterNumber) {
+        //read
+        unsigned int readed = this->getFileSystem()->read(clusterNumber, this->buffer);
+        if (readed != 1) {
+            throw OSF_Exception("No read cluster");
+        }
+        //update meta information
+        this->initCluesterMetadata(clusterNumber);
+        //prevent infinity loop (when no reload correctly) 
+        if (clusterNumber!=0 && this->clusterHeader->nextCluster == clusterNumber) {
+            throw new OSF_Exception("load cluster error", 505);
+        }
+    }
+
+    void initCluster(OSF_ClusterInt clusterNumber) {
         //init pointers
-        this->initDiskListPointers(clusterNumber);
+        this->initCluesterMetadata(clusterNumber);
         //Counters
-        this->clusterHeader->clusterNumber = clusterNumber;
+        //this->clusterHeader->clusterNumber = clusterNumber;
         this->clusterHeader->recordsCount = 0;
         //offsets
-        if (clusterNumber == this->firstCluster) {
+        /*if (clusterNumber == this->firstCluster) {
             this->clusterHeader->dataOffset = sizeof (OSF_DiskListHeader) + sizeof (Header);
         } else {
             this->clusterHeader->dataOffset = sizeof (OSF_DiskListHeader);
         }
         //Sizes
         OSF_ClusterOffset dataSize = this->fileSystem->getClusterSize() - this->clusterHeader->dataOffset;
-        this->clusterHeader->recordPerCluster = dataSize / sizeof (Record);
+        this->clusterHeader->recordPerCluster = dataSize / sizeof (Record);*/
         //List pointers
         this->clusterHeader->nextCluster = 0;
         this->clusterHeader->prevCluster = 0;
     }
 
-    void initDiskListPointers(OSF_ClusterInt clusterNumber) {
+    void initCluesterMetadata(OSF_ClusterInt currentCluster) {
+        this->currentCluster = currentCluster;
         this->clusterHeader = (OSF_DiskListHeader*) this->buffer;
-        //if (this->clusterHeader->dataOffset > sizeof (OSF_DiskListHeader)) {
-        if (this->firstCluster == clusterNumber) {
+        OSF_ClusterOffset dataOffset;
+        if (currentCluster == this->firstCluster) {
+            dataOffset = sizeof (OSF_DiskListHeader) + sizeof (Header);
             this->header = (Header*) (&this->buffer[ sizeof (OSF_DiskListHeader) ]);
+            this->clusterRecords = (Record*) (&buffer[dataOffset]);
         } else {
+            dataOffset = sizeof (OSF_DiskListHeader);
             this->header = NULL;
+            this->clusterRecords = (Record*) (&buffer[ sizeof (OSF_DiskListHeader) ]);
         }
-        this->clusterRecords = (Record*) (&buffer[ clusterHeader->dataOffset ]);
+        this->recordPerCluster = (this->fileSystem->getClusterSize() - dataOffset) / sizeof (Record);
     }
 };
 

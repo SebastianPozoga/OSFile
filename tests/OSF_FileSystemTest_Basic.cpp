@@ -22,8 +22,9 @@
 void testGetVHDD(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("no return VHDD");
     //init
+    OSF_FileSystemHeader header;
     OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_GetVHDD.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
-    OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt) SECTORS_PER_CLUSTER);
+    OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, &header, (OSF_ClusterInt)SECTORS_PER_CLUSTER);
     //test
     if (fileSystem->getVHDD() != vhdd) {
         testUnit->error();
@@ -40,13 +41,13 @@ void testOSF_FileSystem(OSF_TestUnit* testUnit) {
     //Create new Silesystem
     OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_FileSystem.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
     OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
-    OSF_SCpy(header->diskName, diskName);
+    OSF_scpy(header->diskName, diskName);
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
     delete fileSystem;
-    fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt) SECTORS_PER_CLUSTER);
+    fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt)SECTORS_PER_CLUSTER);
     fileSystem->readHeader(header);
     //test
-    if (strcmp(diskName, header->diskName) != 0) {
+    if (strcmp(diskName, header->diskName)!=0) {
         testUnit->error();
     }
     //destroy
@@ -56,9 +57,16 @@ void testOSF_FileSystem(OSF_TestUnit* testUnit) {
 }
 
 void testOSF_FileSystem2(OSF_TestUnit* testUnit) {
+    //vhdd init
+    testUnit->setErrorMsg("init error");
+    OSF_VHDD vHDD(testUnit->filePath("OSF_FileSystem_FileSystem2.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
+    //header
+    testUnit->setErrorMsg("create new file system");
+    OSF_FileSystemHeader header;
+    OSF_FileSystem* fileSystem = new OSF_FileSystem(&vHDD, &header, SECTORS_PER_CLUSTER);
+    delete fileSystem;
     testUnit->setErrorMsg("construct for exist structure");
-    OSF_VHDD vHDD(testUnit->filePath("OSF_FileSystem_FileSystem.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
-    OSF_FileSystem* fileSystem = new OSF_FileSystem(&vHDD, SECTOR_COUNT);
+    fileSystem = new OSF_FileSystem(&vHDD, SECTORS_PER_CLUSTER);
     if (!fileSystem) {
         testUnit->error();
     }
@@ -66,7 +74,7 @@ void testOSF_FileSystem2(OSF_TestUnit* testUnit) {
 }
 
 void testAllocCluster(OSF_TestUnit* testUnit) {
-    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testAllocCluster.osf"), (OSF_SectorSizeInt) SECTOR_SIZE, (OSF_SectorInt) 6, true);
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testAllocCluster.osf"), (OSF_SectorSizeInt)SECTOR_SIZE, (OSF_SectorInt)6, true);
     OSF_FileSystemHeader* header = new OSF_FileSystemHeader();
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, 2);
     //TEST1: one cluster is free. The first free cluster is 3
@@ -114,27 +122,29 @@ void testFreeCluster(OSF_TestUnit* testUnit) {
 }
 
 void testGetClusterSize(OSF_TestUnit* testUnit) {
-    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testGetClusterSize.osf"), (OSF_SectorSizeInt) SECTOR_SIZE, (OSF_SectorInt) SECTOR_COUNT, true);
-    OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, (OSF_ClusterInt) SECTORS_PER_CLUSTER);
-    if (fileSystem->getClusterSize() != SECTORS_PER_CLUSTER * SECTOR_SIZE) {
+    OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_testGetClusterSize.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
+    OSF_FileSystemHeader header;
+    OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, &header, SECTORS_PER_CLUSTER);
+    if (fileSystem->getClusterSize() != SECTORS_PER_CLUSTER*SECTOR_SIZE) {
         testUnit->error("no correct value");
     }
     delete fileSystem;
     delete vhdd;
 }
 
+
 void testUserstoryWriteRead(OSF_TestUnit* testUnit) {
     OSF_ClusterInt clusterCount = 2;
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
     //char path[] = "./OSF_test_data/OSF_FileSystem_us_writeread.osf";
     //Create default data
-    char* buffer = (char*) malloc(blockSize);
+    OSF_Memory buffer = OSF_allocMemory(blockSize);
     for (int i = 0; i < blockSize; i++) {
-        buffer[i] = (char) (i + 1) % 30;
+        buffer[i] = (char) (i+1)%30;
     }
     //Crete struct
     OSF_VHDD* vhdd = new OSF_VHDD(testUnit->filePath("OSF_FileSystem_us_writeread.osf"), SECTOR_SIZE, SECTOR_COUNT, true);
-    OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
+    OSF_FileSystemHeader* header =new OSF_FileSystemHeader;
     strncpy((char*) &header->diskName, "TDisk", sizeof (header->diskName));
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
     //write & read
@@ -145,7 +155,7 @@ void testUserstoryWriteRead(OSF_TestUnit* testUnit) {
     //test
     bool valid = true;
     for (int i = 0; i < blockSize; i++) {
-        if (buffer[i] != (char) (i + 1) % 30) {
+        if (buffer[i] != (char) (i+1)%30) {
             valid = false;
             break;
         }
@@ -154,7 +164,7 @@ void testUserstoryWriteRead(OSF_TestUnit* testUnit) {
     if (!valid) {
         testUnit->error("data valid error");
     }
-    free(buffer);
+    OSF_freeMemory(buffer);
     delete fileSystem;
     delete header;
     delete vhdd;
@@ -166,7 +176,7 @@ void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     OSF_ClusterInt blockSize = clusterCount*CLUSTER_SIZE;
     char path[] = "./OSF_test_data/OSF_FileSystem_read.osf";
     //Create default data
-    char* buffer = (char*) malloc(blockSize);
+    OSF_Memory buffer = OSF_allocMemory(blockSize);
     for (int i = 0; i < blockSize; i++) {
         buffer[i] = (char) i;
     }
@@ -177,7 +187,7 @@ void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     fclose(f);
     //Crete struct
     OSF_VHDD* vhdd = new OSF_VHDD(path, SECTOR_SIZE, SECTOR_COUNT);
-    OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
+    OSF_FileSystemHeader* header =new OSF_FileSystemHeader;
     strncpy((char*) &header->diskName, "TDisk", sizeof (header->diskName));
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
     //write
@@ -194,7 +204,7 @@ void userstoryWriteAndReadOnBegin(OSF_TestUnit* testUnit) {
     if (!valid) {
         testUnit->error("valid readed data error");
     }
-    free(buffer);
+    OSF_freeMemory(buffer);
     delete fileSystem;
     delete header;
     delete vhdd;
@@ -207,15 +217,15 @@ void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_FileSystem_write.osf";
     //Crete struct
     OSF_VHDD* vhdd = new OSF_VHDD(path, SECTOR_SIZE, SECTOR_COUNT, true);
-    OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
+    OSF_FileSystemHeader* header =new OSF_FileSystemHeader;
     strncpy((char*) &header->diskName, "TestDisk", sizeof (header->diskName));
     //header->diskName[sizeof (header->diskName) - 1] = '\0';
 
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
     //Create default data
-    char* buffer = (char*) malloc(blockSize);
+    OSF_Memory buffer = OSF_allocMemory(blockSize);
     for (int i = 0; i < blockSize; i++) {
-        buffer[i] = (char) (i + 1) % 30;
+        buffer[i] = (char) (i+1)%30;
     }
     //write
     OSF_ClusterInt clusterNumber = 3;
@@ -235,7 +245,7 @@ void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     //test
     bool valid = true;
     for (int i = 0; i < blockSize; i++) {
-        if (buffer[i] != (char) (i + 1) % 30) {
+        if (buffer[i] != (char) (i+1)%30) {
             valid = false;
             break;
         }
@@ -244,8 +254,9 @@ void userstoryWriteAndReadThird(OSF_TestUnit* testUnit) {
     if (!valid) {
         testUnit->error("valid data error");
     }
-    free(buffer);
+    OSF_freeMemory(buffer);
 }
+
 
 /**
  * Test if the data write are lost after second write
@@ -256,21 +267,21 @@ void testDoubleWrite(OSF_TestUnit* testUnit) {
     char path[] = "./OSF_test_data/OSF_FileSystem_doubleWrite.osf";
     //Crete struct
     OSF_VHDD* vhdd = new OSF_VHDD(path, SECTOR_SIZE, SECTOR_COUNT, true);
-    OSF_FileSystemHeader* header = new OSF_FileSystemHeader;
+    OSF_FileSystemHeader* header =new OSF_FileSystemHeader;
     strncpy((char*) &header->diskName, "TestDisk", sizeof (header->diskName));
     //header->diskName[sizeof (header->diskName) - 1] = '\0';
 
     OSF_FileSystem* fileSystem = new OSF_FileSystem(vhdd, header, SECTORS_PER_CLUSTER);
     //Create default data
-    char* buffer = (char*) malloc(blockSize);
+    OSF_Memory buffer = OSF_allocMemory(blockSize);
     for (int i = 0; i < blockSize; i++) {
-        buffer[i] = (char) (i + 1) % 30;
+        buffer[i] = (char) (i+1)%30;
     }
     //write
     OSF_ClusterInt clusterNumber = 3;
     //first
     fileSystem->write(clusterNumber, buffer, clusterCount);
-    fileSystem->write((clusterNumber + 1), buffer, clusterCount);
+    fileSystem->write((clusterNumber+1), buffer, clusterCount);
     //delete
     delete fileSystem;
     delete header;
@@ -288,7 +299,7 @@ void testDoubleWrite(OSF_TestUnit* testUnit) {
     //test
     bool valid = true;
     for (int i = 0; i < blockSize; i++) {
-        if (buffer[i] != (char) (i + 1) % 30) {
+        if (buffer[i] != (char) (i+1)%30) {
             valid = false;
             break;
         }
@@ -302,14 +313,14 @@ void testDoubleWrite(OSF_TestUnit* testUnit) {
         testUnit->error("no open file");
         return;
     }
-    fseek(f, CLUSTER_SIZE * (clusterNumber + 1), SEEK_SET);
+    fseek(f, CLUSTER_SIZE *(clusterNumber+1), SEEK_SET);
     memset(buffer, 0, blockSize);
     int readed2 = fread(buffer, 1, blockSize, f);
     fclose(f);
     //test2
     valid = true;
     for (int i = 0; i < blockSize; i++) {
-        if (buffer[i] != (char) (i + 1) % 30) {
+        if (buffer[i] != (char) (i+1)%30) {
             valid = false;
             break;
         }
@@ -318,15 +329,15 @@ void testDoubleWrite(OSF_TestUnit* testUnit) {
         testUnit->error("no valid read cluster");
     }
     //end
-    free(buffer);
+    OSF_freeMemory(buffer);
 }
 
 int main(int argc, char** argv) {
-
+    
     OSF_TestUnit testUnit;
-
+    
     testUnit.startTests("OSF_FileSystemTest_Basic");
-
+    
     testUnit.test("testUserstoryWriteRead", &testUserstoryWriteRead);
     testUnit.test("testRead", &userstoryWriteAndReadOnBegin);
     testUnit.test("testWrite", &userstoryWriteAndReadThird);

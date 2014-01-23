@@ -16,9 +16,9 @@ OSF_PlainAPIData* _initPlainAPI(OSF_TestUnit* testUnit) {
     OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
     delete plainAPIData->fs;
     delete plainAPIData->vHDD;
-    plainAPIData->vHDD = new OSF_VHDD(testUnit->filePath("PlainAPI"), 128, 20, true);
+    plainAPIData->vHDD = new OSF_VHDD(testUnit->filePath("PlainAPI"), 128, 80, true);
     OSF_FileSystemHeader header;
-    OSF_SCpy(header.diskName, "testDisk");
+    OSF_scpy(header.diskName, "testDisk");
     plainAPIData->fs = new OSF_FileSystem(plainAPIData->vHDD, &header, 2);
     //insert default data
     //directories
@@ -62,7 +62,7 @@ void testOSF_Close(OSF_TestUnit* testUnit) {
     OSF_Close(handle);
 }
 
-void testOSF_Read(OSF_TestUnit* testUnit) {
+void testOSF_WriteAndRead(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("Init test");
     _initPlainAPI(testUnit);
     testUnit->setErrorMsg("can not open file");
@@ -70,17 +70,24 @@ void testOSF_Read(OSF_TestUnit* testUnit) {
     if (!handle) {
         testUnit->error();
     }
-    testUnit->setErrorMsg("read error");
     char* buf = new char[128];
-    OSF_Read(handle, buf, 128);
-    if (testUnit->testBuffer(buf, 128)) {
+    testUnit->setErrorMsg("write error");
+    //Write
+    testUnit->writeBufferTestData(buf, sizeof(buf));
+    OSF_Write(handle, buf, sizeof(buf));
+    testUnit->cleanBuffer(buf, sizeof(buf));
+    //Read
+    handle->pointer = 0;
+    testUnit->setErrorMsg("read error");
+    OSF_Read(handle, buf, sizeof(buf));
+    if (!testUnit->testBuffer(buf, sizeof(buf))) {
         testUnit->error();
     };
     testUnit->setErrorMsg("close error");
     OSF_Close(handle);
 }
 
-void testOSF_Write(OSF_TestUnit* testUnit) {
+/*void testOSF_Write(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("Init test");
     _initPlainAPI(testUnit);
     testUnit->setErrorMsg("can not open file");
@@ -94,12 +101,12 @@ void testOSF_Write(OSF_TestUnit* testUnit) {
     OSF_Write(handle, buf, 128);
     memset(buf, '0', 128);
     handle->getFile()->read(buf, 0, 128);
-    if (testUnit->testBuffer(buf, 128, 64)) {
+    if (!testUnit->testBuffer(buf, 128, 64)) {
         testUnit->error();
     };
     testUnit->setErrorMsg("close error");
     OSF_Close(handle);
-}
+}*/
 
 struct TestOSF_LsCountData {
     int count;
@@ -162,13 +169,14 @@ void testOSF_Remove(OSF_TestUnit* testUnit) {
 void testOSF_Mkdir(OSF_TestUnit* testUnit) {
     testUnit->setErrorMsg("Init test");
     _initPlainAPI(testUnit);
+    OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
     testUnit->setErrorMsg("delete error");
     string path = "n1/n2/n3";
     OSF_mkdir(path);
     testUnit->setErrorMsg("directories was not create");
-    OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
+    //OSF_PlainAPIData* plainAPIData = OSF_PlainAPI_init();
     OSF_DirectoryInterface* dir = plainAPIData->fs->getRootDir()->getDirectory(path);
-    if(dir!=NULL){
+    if(dir==NULL){
         testUnit->error();
     }
     delete dir;
@@ -189,8 +197,8 @@ int main(int argc, char** argv) {
     
     testUnit.test("testOSF_Open", &testOSF_Open);
     testUnit.test("testOSF_Close", &testOSF_Close);
-    testUnit.test("testOSF_Read", &testOSF_Read);
-    testUnit.test("testOSF_Write", &testOSF_Write);
+    testUnit.test("testOSF_WriteAndRead", &testOSF_WriteAndRead);
+    //testUnit.test("testOSF_Write", &testOSF_Write);
 
     testUnit.endTests();
 

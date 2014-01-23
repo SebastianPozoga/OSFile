@@ -179,8 +179,8 @@ public:
             fsHeader = new OSF_FileSystemHeader;
             fsHeader->allocPointer = 0;
             fsHeader->clusterCount = 0;
-            OSF_SCpy(fsHeader->diskName, "disk name");
-            OSF_SCpy(fsHeader->systemName, "system name");
+            OSF_scpy(fsHeader->diskName, "disk name");
+            OSF_scpy(fsHeader->systemName, "system name");
         }
         return fsHeader;
     }
