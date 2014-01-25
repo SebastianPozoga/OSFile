@@ -142,6 +142,11 @@ int main(int argc, char** argv) {
                 cin >> filename;
                 cout << OSF_chmodFile(path + "/" + filename);
             }//
+            else if (command == "rm") {
+                string filename;
+                cin >> filename;
+                OSF_remove(path + "/" + filename);
+            }//
             else if (command == "help") {
                 cout << "Help:" << endl;
                 cout << endl;

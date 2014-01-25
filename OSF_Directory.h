@@ -126,8 +126,16 @@ public:
      */
     OSF_DirectoryInterface* mkdir(string name);
 
+    /**
+     * Remove contains file and folders
+     */
+    void free();
+    
 protected:
     void initRecord(string name, OSF_DirRecord* record);
+    
+    void remove(OSF_DirRecord record);
+    
 };
 
 #endif	/* OSF_DIRECTORY_H */

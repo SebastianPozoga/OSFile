@@ -89,6 +89,14 @@ public:
         throw OSF_Exception("OSF_FileInterface No implement setFileHeder", 301);
     }
 
+    /**
+     * Remove data from file
+     * (no remove file)
+     * 
+     */
+    virtual void free(){
+        throw OSF_Exception("OSF_FileInterface No implement free", 301);
+    }
 };
 
 

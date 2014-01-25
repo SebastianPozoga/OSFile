@@ -52,6 +52,7 @@ public:
     OSF_FileHeder* readFileHeder(OSF_FileHeder*);
     OSF_FileHeder* writeFileHeder(OSF_FileHeder*);
 
+    void free();
 };
 
 #endif	/* SPFILE_H */

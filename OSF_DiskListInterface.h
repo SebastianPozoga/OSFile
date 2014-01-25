@@ -36,6 +36,10 @@ public:
         throw OSF_Exception("OSF_DiskList No implement writeHeader", 301);
     }
 
+    virtual Record* pop(Record* r){
+        throw OSF_Exception("OSF_DiskList No implement push", 301);
+    }
+
     virtual Record* push(Record* r){
         throw OSF_Exception("OSF_DiskList No implement push", 301);
     }

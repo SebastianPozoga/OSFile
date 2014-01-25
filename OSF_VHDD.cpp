@@ -10,8 +10,8 @@ OSF_VHDD::OSF_VHDD(string path, OSF_SectorSizeInt sectorSize, OSF_SectorInt sect
     if (cleanFile) {
         file = fopen(path.c_str(), "wb");
         if (file == NULL) {
-            fputs("FVHDD: File open error\n", stderr);
-            throw "FVHDD: File open error\n";
+            fputs("FVHDD: File create error\n", stderr);
+            throw "FVHDD: File create error\n";
         }
         fclose(file);
     }

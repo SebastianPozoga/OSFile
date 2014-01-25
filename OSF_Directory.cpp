@@ -153,11 +153,12 @@ bool OSF_Directory::remove(string name) {
     OSF_DiskList* iterate = (OSF_DiskList*)this;
     OSF_DirRecord popRecord;
     if (iterate->pop(&popRecord) == NULL) {
-        //if no contain file
+        //if no contain file/directory
         return false;
     };
-    //if first if file to delete
+    //if first if file/directory to delete
     if (strcmp(popRecord.name, name.c_str()) == 0) {
+        remove(popRecord);
         return true;
     }
     //search
@@ -165,6 +166,7 @@ bool OSF_Directory::remove(string name) {
     for (iterate->first(&record); iterate->current(&record) != NULL; iterate->next(&record)) {
         //
         if (strcmp(record.name, name.c_str()) == 0) {
+            remove(record);
             iterate->currentWrite(&popRecord);
             return true;
         }
@@ -172,6 +174,35 @@ bool OSF_Directory::remove(string name) {
     //if no exist
     iterate->push(&popRecord);
     return false;
+}
+
+void OSF_Directory::remove(OSF_DirRecord record) {
+    if (OSF_DirectoryInterface::isDir(&record)) {
+        OSF_DirectoryInterface* dir = new OSF_Directory(this->getFileSystem(), record.firstCluster);
+        dir->free();
+        delete dir;
+        this->getFileSystem()->freeCluster(record.firstCluster);
+    } else {
+        OSF_File* file = new OSF_File(this->getFileSystem(), record.firstCluster);
+        file->free();
+        delete file;
+        this->getFileSystem()->freeCluster(record.firstCluster);
+    }
+}
+
+void OSF_Directory::free() {
+    OSF_DirRecord r;
+    while (this->pop(&r)) {
+        if(isDir(&r)){
+            OSF_Directory* dir = new OSF_Directory(this->getFileSystem(), r.firstCluster);
+            dir->free();
+            delete dir;
+        }else{
+            OSF_File* file = new OSF_File(this->getFileSystem(), r.firstCluster);
+            file->free();
+            delete file;
+        }
+    }
 }
 
 OSF_DirectoryInterface* OSF_Directory::mkdir(string path) {

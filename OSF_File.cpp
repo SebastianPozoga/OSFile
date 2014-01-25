@@ -89,3 +89,10 @@ OSF_FileHeder* OSF_File::readFileHeder(OSF_FileHeder* header) {
 OSF_FileHeder* OSF_File::writeFileHeder(OSF_FileHeder* header) {
     return this->writeHeader(header);
 }
+
+void OSF_File::free() {
+    OSF_FileRecord r;
+    while (this->pop(&r)) {
+        this->getFileSystem()->freeCluster(r.cluster);
+    }
+}

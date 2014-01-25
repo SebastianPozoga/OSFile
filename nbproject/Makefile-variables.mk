@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-Linux-x86
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
-CND_ARTIFACT_NAME_Debug=osf
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/osf
+CND_ARTIFACT_NAME_Debug=osfile
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/osfile
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Debug=osf.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/osf.tar
+CND_PACKAGE_NAME_Debug=osfile.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/osfile.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
-CND_ARTIFACT_NAME_Release=osf
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/osf
+CND_ARTIFACT_NAME_Release=osfile
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/osfile
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=osf.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/osf.tar
+CND_PACKAGE_NAME_Release=osfile.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/osfile.tar
 #
 # include compiler specific variables
 #

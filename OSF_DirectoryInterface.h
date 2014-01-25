@@ -149,6 +149,17 @@ public:
     virtual OSF_DirectoryInterface* mkdir(string path) {
         throw OSF_Exception("OSF_DirectoryInterface No implement mkdir", 301);
     }
+    
+    
+    /**
+     * Remove data from direcotry
+     * (remove contain file and directory 
+     * - no remove the directory)
+     * 
+     */
+    virtual void free() {
+        throw OSF_Exception("OSF_DirectoryInterface No implement free", 301);
+    }
 };
 
 

@@ -234,7 +234,10 @@ void OSF_remove(string pathStr) {
     if (!dir->remove(path.getNodeName())) {
         throw OSF_Exception("File " + pathStr + " is not exist (or can not be deleted)");
     }
-    delete dir;
+    if(plain->fs->getRootDir()!=dir){
+        delete dir;
+    }
+    
 }
 
 void OSF_mkdir(string pathStr) {
